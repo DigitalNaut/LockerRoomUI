@@ -1,11 +1,12 @@
 import * as React from "react";
+import styles from "./ComingSoon.module.scss";
 
-function Homepage(props) {
+function ComingSoon(props) {
   return (
-    <header className="App-header">
+    <header className={styles.Header}>
       <p>Coming soon</p>
     </header>
   );
 }
 
-export default Homepage;
+export default ComingSoon;
