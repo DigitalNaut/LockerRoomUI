@@ -6,51 +6,54 @@ import styles from "./Inbox.module.scss";
 import { Link } from "react-router-dom";
 
 function Inbox(props) {
-  let [activeLogin, setActiveLogin] = React.useState(null);
   let [inbox, setInbox] = React.useState([]);
 
   React.useLayoutEffect(() => {
     async function init() {
-      let credentials = props.credentials || loadCredentials();
-
-      let { username, token } = credentials || {};
-
-      if (username && token) {
-        setActiveLogin({ username, token });
-      }
-      setInbox(await viewInbox(token));
+      if (props.credentials) setInbox(await viewInbox(props.credentials.token));
     }
     init();
-  }, []);
+  }, [props.credentials]);
 
   return (
-    <>
-      {(activeLogin && (
+    <div className={styles.component}>
+      {(props.credentials && (
         <>
-          {activeLogin.username && (
+          {props.credentials.username && (
             <>
-              <div>Signed in as {activeLogin.username}.</div>
+              <div>Signed in as {props.credentials.username}.</div>
               <div>
                 Back to <Link to="/dashboard">dashboard</Link>
               </div>
             </>
           )}
-          {(inbox &&
-            inbox.length &&
-            inbox.map((message, i) => {
-              return (
-                <div key={i}>
-                  <p>From:{message.sender}</p>
-                  <p>To:{message.recipient}</p>
-                  <div>Message:</div>
-                  <div>
-                    <p>{message.subject}</p>
-                    <p>{message.body}</p>
-                    <p>{message.footer}</p>
+          <div className={styles.inbox}>
+            {(inbox &&
+              inbox.length &&
+              inbox.map((message, i) => {
+                return (
+                  <div key={i} className={styles.message}>
+                    <div className={styles.messageField}>
+                      <b>From: </b>
+                      {message.sender}
+                      <br />
+                      <b>To: </b>
+                      {message.recipient}
+                    </div>
+                    <div className={styles.messageField}>
+                      <p>
+                        <b>Subject: </b>
+                        {message.subject}
+                      </p>
+                      <div className={styles.messageBody}>
+                        {message.body}
+                        <p>{message.footer}</p>
+                      </div>
+                    </div>
                   </div>
-                </div>
-              );
-            })) || <p>Inbox is empty.</p>}
+                );
+              })) || <p>Inbox is empty.</p>}
+          </div>
         </>
       )) || (
         <>
@@ -60,7 +63,7 @@ function Inbox(props) {
           </p>
         </>
       )}
-    </>
+    </div>
   );
 }
 

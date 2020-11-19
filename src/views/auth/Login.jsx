@@ -1,29 +1,12 @@
 import * as React from "react";
 import { useInput } from "../../controllers/hooks/useInput";
-import {
-  login,
-  saveCredentials,
-  loadCredentials,
-} from "../../controllers/auth";
+import { login, saveCredentials } from "../../controllers/auth";
 import { Redirect } from "react-router-dom";
 
 import styles from "./Login.module.scss";
 
 function Login(props) {
-  let [activeLogin, setActiveLogin] = React.useState(null);
-  let [loginInput, setLoginInput] = React.useState(null);
-
-  React.useLayoutEffect(() => {
-    let credentials = props.credentials || loadCredentials();
-
-    let { username, token } = credentials || {};
-
-    console.log(`Credentials ${credentials} found for ${username}:`, token);
-
-    if (username && token) {
-      setActiveLogin({ username, token });
-    }
-  }, []);
+  let [warning, setWarning] = React.useState(null);
 
   const {
     value: username,
@@ -43,35 +26,40 @@ function Login(props) {
       (username && `Submitting: ${username}${password && " : " + password}`) ||
       "Please submit a username and a valid password.";
 
-    let creds = {
+    let credentials = {
       username: username,
       password: password,
     };
 
-    let response = await login(creds);
-
-    if (!response) return false;
-
-    setLoginInput(response);
+    let response = await login(credentials);
+    if (!response)
+      return setWarning(
+        response.message ? response.message : "Could not log you in."
+      );
 
     let { token } = response || {};
+    if (!username || !token)
+      setWarning(response.message ? response.message : "Error signing you in.");
 
-    if (username && token) creds = saveCredentials({ username, token });
+    let savedCredentials = JSON.parse(saveCredentials({ username, token }));
 
-    setActiveLogin(creds);
+    if (!savedCredentials)
+      setWarning(
+        response.message ? response.message : "Could not store your session."
+      );
+
+    props.setActiveLogin(savedCredentials);
 
     resetUsername();
     resetPassword();
-
-    return true;
   };
 
   return (
     <>
-      {loginInput && <div>{loginInput.message}</div>}
-      {activeLogin && <Redirect to="/dashboard" />}
-      {!activeLogin && (
-        <>
+      {props.credentials && <Redirect to="/dashboard" />}
+      {warning && <div>{warning.message}</div>}
+      {!props.credentials && (
+        <div className={styles.component}>
           <div>You're not logged in.</div>
           <br />
           <form onSubmit={handleSubmit}>
@@ -91,7 +79,7 @@ function Login(props) {
               </button>
             </label>
           </form>
-        </>
+        </div>
       )}
     </>
   );

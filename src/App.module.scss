@@ -1,8 +1,108 @@
-@media (prefers-reduced-motion: no-preference) {
+// MASTERIAL
+
+@mixin background($color) {
+  background-color: "#" $color;
+}
+
+@mixin shadowRelieve() {
+  box-shadow: 4px 4px 1px darken($WindowBackground, 10%);
+}
+
+// Theme
+
+$Accent: orange;
+$AccentShadow: darken($Accent, 20%);
+$AccentHighlight: lighten($Accent, 10%);
+
+$Background: #121212;
+$Text: #d9d9d9;
+$Box: #1d1d1d;
+
+$WindowHeader: #000000;
+$WindowIcons: #616161;
+$WindowBackground: #292929;
+
+$Menu: #2d2d2d;
+$MenuHighlight: lighten($Menu, 10%);
+
+$Padding: 16px;
+
+// GLOBAL PRESETS
+html {
+  overflow: hidden;
+}
+
+body {
+  border: 0px;
+  margin: 0px;
+  display: flex;
+  justify-content: center;
+  background-color: $Background;
+  font-family: 'Noto Sans', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 
 }
 
-html body {
-  margin: 0;
-  padding: 0;
+h1 {
+  font-size: 40px;
+}
+
+h2 {
+  font-size: 30px;
+}
+
+p {
+  font-size: 14px;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+// COMPONENTS
+.app {
+  display: flex;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  box-shadow: 0px 0px 128px $Background;
+  border: solid 1px $Background;
+  background-color: $Background;
+  color: $Text;
+}
+
+// SCREEN TARGETS
+// Small devices (landscape phones, 576px and up)
+@media (min-width: 576px) {
+  .app {
+    width: 95vw;
+  }
+}
+
+// Medium devices (tablets, 768px and up)
+@media (min-width: 768px) {
+  .app {
+    width: 90vw;
+  }
+}
+
+// Large devices (desktops, 992px and up)
+@media (min-width: 992px) {
+  .app {
+    width: 80vw;
+  }
+}
+
+// Extra large devices (large desktops, 1200px and up)
+@media (min-width: 1200px) {
+  .app {
+    width: 75vw;
+  }
+}
+
+
+@media (prefers-reduced-motion: no-preference) {
+
 }

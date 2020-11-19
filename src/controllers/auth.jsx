@@ -1,8 +1,8 @@
 import * as Storage from "./storage";
 
-async function postData(url = "", data = {}) {
+export async function postData(url = "", token, data = {}) {
   try {
-    const response = await fetch(url, {
+    const request = await fetch(url, {
       method: "POST", // *GET, POST, PUT, DELETE, etc.
       mode: "cors", // no-cors, *cors, same-origin
       cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
@@ -10,20 +10,27 @@ async function postData(url = "", data = {}) {
       headers: {
         "Content-Type": "application/json",
         "Access-Control-Allow-Origin": "http://localhost:3001",
+        token: token,
       },
       redirect: "follow", // manual, *follow, error
       referrerPolicy: "no-referrer", // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
       body: JSON.stringify(data), // body data type must match "Content-Type" header
     });
-    return response.json(); // parses JSON response into native JavaScript objects
+
+    if (request.response === 401) clearCredentials();
+
+    let response = await request.json();
+    response.status = request.status;
+
+    return response;
   } catch (error) {
     console.log("Data post failed: ", error);
   }
 }
 
-async function getData(url = "") {
+export async function getData(url = "", token) {
   try {
-    const response = await fetch(url, {
+    const request = await fetch(url, {
       method: "GET", // *GET, POST, PUT, DELETE, etc.
       mode: "cors", // no-cors, *cors, same-origin
       cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
@@ -31,11 +38,19 @@ async function getData(url = "") {
       headers: {
         "Content-Type": "application/json",
         "Access-Control-Allow-Origin": "http://localhost:3001",
+        token: token,
       },
       redirect: "follow", // manual, *follow, error
       referrerPolicy: "no-referrer", // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
     });
-    return response.json(); // parses JSON response into native JavaScript objects
+
+    if (request.status === 401) clearCredentials();
+    if (request.status !== 200) return false;
+
+    let response = await request.json();
+    response.status = request.status;
+
+    return response;
   } catch (error) {
     console.log("Data post failed: ", error);
   }
@@ -47,6 +62,7 @@ export async function login(credentials) {
   try {
     let response = await postData(
       "http://localhost:3000/auth/login",
+      null,
       credentials
     );
     return response;
@@ -55,16 +71,34 @@ export async function login(credentials) {
   }
 }
 
-export async function logout() {
+export async function logout(token) {
   try {
     console.log("Logging out.");
-    let response = await getData("http://localhost:3000/auth/logout");
+    const response = await getData("http://localhost:3000/auth/logout", token);
 
-    if (!response) throw "Internal error: Response obj is null.";
+    if (!response) {
+      console.log("Service unavailable: Could not log out.");
+      return null;
+    }
 
+    if (response.status === 401) clearCredentials();
     clearCredentials();
 
-    return response;
+    return true;
+  } catch (error) {
+    console.log("Failed to logout: ", error);
+  }
+}
+
+export async function register(credentials, token = null) {
+  try {
+    const request = await postData(
+      "http://localhost:3000/auth/register",
+      token,
+      credentials
+    );
+
+    return request;
   } catch (error) {
     console.log("Failed to logout: ", error);
   }
@@ -86,12 +120,6 @@ export function saveCredentials(credentials) {
     else {
       localStorage.clear();
       localStorage.credentials = JSON.stringify(credentials);
-      console.log(
-        "Local Creds saved:",
-        localStorage.credentials,
-        localStorage.credentials.username,
-        localStorage.credentials.token
-      );
       return localStorage.credentials;
     }
 

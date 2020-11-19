@@ -1,36 +1,75 @@
 import logo from "./logo.svg";
-import "./App.module.scss";
+import style from "./App.module.scss";
 
 import { Route, BrowserRouter as Router, Switch } from "react-router-dom";
+import * as React from "react";
 
 import ComingSoon from "./views/ComingSoon";
 import Dashboard from "./views/dashboard/Dashboard";
 import Homepage from "./views/Homepage";
+import Register from "./views/auth/Register";
 import Login from "./views/auth/Login";
 import Logout from "./views/auth/Logout";
 
 import NotFound from "./views/error/NotFound";
 import Compose from "./views/messages/Compose";
 import Inbox from "./views/messages/Inbox";
+import { loadCredentials } from "./controllers/auth";
 
-function App() {
+function App(props) {
+  let [activeLogin, setActiveLogin] = React.useState(null);
+
+  React.useEffect(() => {
+    let credentials = loadCredentials();
+    let { username, token } = credentials || {};
+
+    if (username && token) {
+      setActiveLogin({ username, token });
+    }
+  }, []);
+
   return (
-    <Router>
-      <Switch>
-        <Route exact path="/" component={Homepage}></Route>
-        <Route exact path="/login" component={Login}></Route>
-        <Route exact path="/logout" component={Logout}></Route>
-        <Route path="/dashboard" component={Dashboard}></Route>
-        <Route path="/lockers" component={ComingSoon}></Route>
-        <Route path="/messages" component={Inbox}></Route>
-        <Route path="/message/new" component={Compose}></Route>
-        <Route path="/message/view" component={ComingSoon}></Route>
-        <Route path="/users" component={ComingSoon}></Route>
-        <Route path="/users/:username" component={ComingSoon}></Route>
+    <div className={style.app}>
+      <Router>
+        <Switch>
+          <Route exact path="/">
+            <Homepage credentials={activeLogin} />
+          </Route>
+          <Route exact path="/register">
+            <Register credentials={activeLogin}/>
+          </Route>
+          <Route exact path="/login">
+            <Login credentials={activeLogin} setActiveLogin={setActiveLogin} />
+          </Route>
+          <Route exact path="/logout">
+            <Logout credentials={activeLogin} setActiveLogin={setActiveLogin}/>
+          </Route>
+          <Route path="/dashboard">
+            <Dashboard credentials={activeLogin} />
+          </Route>
+          <Route path="/lockers">
+            <ComingSoon credentials={activeLogin} />
+          </Route>
+          <Route path="/messages">
+            <Inbox credentials={activeLogin} />
+          </Route>
+          <Route path="/message/new">
+            <Compose credentials={activeLogin} />
+          </Route>
+          <Route path="/message/view">
+            <ComingSoon credentials={activeLogin} />
+          </Route>
+          <Route path="/users">
+            <ComingSoon credentials={activeLogin} />
+          </Route>
+          <Route path="/users/:username">
+            <ComingSoon credentials={activeLogin} />
+          </Route>
 
-        <Route component={NotFound}></Route>
-      </Switch>
-    </Router>
+          <Route component={NotFound}></Route>
+        </Switch>
+      </Router>
+    </div>
   );
 }
 

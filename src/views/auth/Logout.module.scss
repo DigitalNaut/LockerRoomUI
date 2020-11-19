@@ -1,0 +1,8 @@
+@import "../../App.module.scss";
+
+.component {
+  background: $Box;
+  overflow-y: scroll;
+  display: flex;
+  flex-direction: column;
+}

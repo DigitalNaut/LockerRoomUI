@@ -1,0 +1,28 @@
+@import "../../App.module.scss";
+
+.component {
+  background: $Box;
+  overflow-y: scroll;
+  display: flex;
+  flex-direction: column;
+}
+
+.inbox {
+  overflow-y: scroll;
+  display: flex;
+  flex-direction: column;
+}
+
+.message {
+  margin: 5px;
+  padding: 5px;
+}
+
+.messageField {
+  margin: 5px;
+  padding: 5px;
+}
+
+.messageBody {
+  margin-left: 15px;
+}

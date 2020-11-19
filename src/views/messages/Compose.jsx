@@ -1,24 +1,14 @@
 import * as React from "react";
 import { useInput } from "../../controllers/hooks/useInput";
-import { loadCredentials } from "../../controllers/auth";
 import { sendMsg } from "../../controllers/messages";
 
 import styles from "./Compose.module.scss";
-import { Link } from "react-router-dom";
+import { Link, Redirect } from "react-router-dom";
 
 function Compose(props) {
-  let [activeLogin, setActiveLogin] = React.useState(null);
   let [sendResult, setSendResult] = React.useState(null);
 
   React.useLayoutEffect(() => {
-    let credentials = props.credentials || loadCredentials();
-
-    let { username, token } = credentials || {};
-
-    if (username && token) {
-      setActiveLogin({ username, token });
-    }
-
     // resetRecipient();
     // resetSubject();
     // resetBody();
@@ -29,21 +19,26 @@ function Compose(props) {
     value: msgRecipient,
     bind: bindRecipient,
     reset: resetRecipient,
-  } = useInput("Lisa");
+  } = useInput("");
   let { value: msgSubject, bind: bindSubject, reset: resetSubject } = useInput(
-    "Hello, Lisa"
+    ""
   );
-  let { value: msgBody, bind: bindBody, reset: resetBody } = useInput(
-    "Hello there, how are you? It's your mom."
-  );
-  let { value: msgFooter, bind: bindFooter, reset: resetFooter } = useInput(
-    "Call me at: 133-332-465"
-  );
+  let { value: msgBody, bind: bindBody, reset: resetBody } = useInput("");
+  let { value: msgFooter, bind: bindFooter, reset: resetFooter } = useInput("");
 
   function handleReset(event) {
     event.preventDefault();
 
-    console.log("Reset");
+    setSendResult(null);
+  }
+
+  function handleSendAnother(event) {
+    event.preventDefault();
+
+    resetRecipient();
+    resetSubject();
+    resetBody();
+    resetFooter();
 
     setSendResult(null);
   }
@@ -58,18 +53,11 @@ function Compose(props) {
     };
 
     let response = await sendMsg(
-      activeLogin.token,
-      activeLogin.username,
+      props.credentials.token,
+      props.credentials.username,
       msgRecipient,
       msg
     );
-
-    console.log("response:", response);
-
-    let { id, message } = response;
-    console.log("Obvious error:", id, response);
-
-    console.log("Response: ", response);
 
     if (!response) return null;
 
@@ -78,16 +66,20 @@ function Compose(props) {
 
   return (
     <>
-      {(activeLogin && (
-        <>
-          {activeLogin.username && (
-            <div>Signed in as {activeLogin.username}.</div>
-          )}
-          {sendResult && !sendResult.message && (
+      {(props.credentials && (
+        <div className={styles.box}>
+          {props.credentials.username && (
             <>
+              <div>Signed in as {props.credentials.username}.</div>
               <div>
                 Back to <Link to="/dashboard">dashboard</Link>
               </div>
+              <br />
+            </>
+          )}
+          {sendResult && !sendResult.message && (
+            <>
+              <div>Message sent.</div>
               <p>
                 <span>From:{sendResult.sender}</span>
                 <br />
@@ -105,6 +97,15 @@ function Compose(props) {
                       {sendResult.footer && <span>{sendResult.footer}</span>}
                     </p>
                   </div>
+                  <label className={styles.messageActions}>
+                    <div>
+                      <Link to="/messages">Inbox</Link>
+                      <br />
+                      <button name="another" onClick={handleSendAnother}>
+                        Send another
+                      </button>
+                    </div>
+                  </label>
                 </>
               )}
             </>
@@ -122,33 +123,38 @@ function Compose(props) {
           {!sendResult && (
             <form onSubmit={handleSubmit}>
               <label>
-                Recipient:
-                <input type="text" {...bindRecipient} />
+                To:
+                <input type="text" placeholder="Recipient" {...bindRecipient} />
               </label>
               <br />
+              <br />
               <label>
-                Header:
-                <input type="text" {...bindSubject} />
+                Subject:
+                <input type="text" placeholder="Subject"{...bindSubject} />
               </label>
               <br />
               <label>
                 Body:
-                <input type="text" {...bindBody} />
+                <input type="textbox" placeholder="Body" {...bindBody} />
               </label>
               <br />
               <label>
                 Footer:
-                <input type="text" {...bindFooter} />
+                <input type="text" placeholder="Footer" {...bindFooter} />
               </label>
               <br />
-              <label>
+              <br />
+              <label className={styles.messageActions}>
+                <div>
+                  <Link to="/dashboard">Cancel</Link>
+                </div>
                 <button name="submit" onSubmit={handleSubmit}>
                   Send
                 </button>
               </label>
             </form>
           )}
-        </>
+        </div>
       )) || (
         <>
           <p>No session found.</p>

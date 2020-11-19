@@ -5,24 +5,22 @@ import { loadCredentials } from "../controllers/auth";
 import styles from "./Homepage.module.scss";
 
 function Homepage(props) {
-  let [activeLogin, setActiveLogin] = React.useState(null);
-
-  React.useLayoutEffect(() => {
-    let credentials = props.credentials || loadCredentials();
-
-    let { username, token } = credentials || {};
-
-    if (username && token) {
-      setActiveLogin({ username, token });
-    }
-  }, []);
-
   return (
-    <div className={styles.container}>
+    <div className={styles.component}>
       <h1 className={styles.header}>Homepage</h1>
-      <p>
-        <Link to="/login">Login</Link>
-      </p>
+      {(props.credentials && (
+        <p>
+          <Link to="/dashboard">Dashboard</Link>
+        </p>
+      )) || (
+        <>
+          <p>
+            <Link to="/register">Register</Link>
+            <br />
+            <Link to="/login">Login</Link>
+          </p>
+        </>
+      )}
     </div>
   );
 }
