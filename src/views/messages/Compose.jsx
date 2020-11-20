@@ -7,6 +7,7 @@ import { Link, Redirect } from "react-router-dom";
 
 function Compose(props) {
   let [sendResult, setSendResult] = React.useState(null);
+  let [warning, setWarning] = React.useState("");
 
   let {
     value: msgRecipient,
@@ -34,6 +35,10 @@ function Compose(props) {
     setSendResult(null);
   }
 
+  async function handleRetry(event) {
+    setWarning("");
+  }
+
   async function handleSubmit(event) {
     event.preventDefault();
 
@@ -42,6 +47,9 @@ function Compose(props) {
       body: msgBody,
       footer: msgFooter,
     };
+
+    if (!msg.subject)
+    return setWarning("Your message does not have a subject.");
 
     let response = await sendMsg(
       props.credentials.token,
@@ -106,43 +114,57 @@ function Compose(props) {
             </>
           )}
           {!sendResult && (
-            <form onSubmit={handleSubmit}>
-              <label>
-                To:
-                <input
-                  type="text"
-                  placeholder="Recipient"
-                  {...bindRecipient}
-                  autoFocus={true}
-                />
-              </label>
-              <br />
-              <br />
-              <label>
-                Subject:
-                <input type="text" placeholder="Subject" {...bindSubject} />
-              </label>
-              <br />
-              <label>
-                Body:
-                <input type="textbox" placeholder="Body" {...bindBody} />
-              </label>
-              <br />
-              <label>
-                Footer:
-                <input type="text" placeholder="Footer" {...bindFooter} />
-              </label>
-              <br />
-              <br />
-              <label className={styles.messageActions}>
+            <>
+              {(warning && (
                 <div>
-                  <Link to="/dashboard">Cancel</Link>
+                  {warning}
+                  <br />
+                  <label>
+                    <button name="submit" type="submit" onClick={handleRetry}>
+                      Retry
+                    </button>
+                  </label>
                 </div>
-                <button name="submit" type="submit" onSubmit={handleSubmit}>
-                  Send
-                </button>
-              </label>
-            </form>
+              )) || (
+                <form onSubmit={handleSubmit}>
+                  <label>
+                    To:
+                    <input
+                      type="text"
+                      placeholder="Recipient"
+                      {...bindRecipient}
+                      autoFocus={true}
+                    />
+                  </label>
+                  <br />
+                  <br />
+                  <label>
+                    Subject:
+                    <input type="text" placeholder="Subject" {...bindSubject} />
+                  </label>
+                  <br />
+                  <label>
+                    Body:
+                    <input type="textbox" placeholder="Body" {...bindBody} />
+                  </label>
+                  <br />
+                  <label>
+                    Footer:
+                    <input type="text" placeholder="Footer" {...bindFooter} />
+                  </label>
+                  <br />
+                  <br />
+                  <label className={styles.messageActions}>
+                    <div>
+                      <Link to="/dashboard">Cancel</Link>
+                    </div>
+                    <button name="submit" type="submit" onSubmit={handleSubmit}>
+                      Send
+                    </button>
+                  </label>
+                </form>
+              )}
+            </>
           )}
         </div>
       )) || (
