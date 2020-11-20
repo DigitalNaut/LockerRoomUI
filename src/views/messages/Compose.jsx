@@ -8,13 +8,6 @@ import { Link, Redirect } from "react-router-dom";
 function Compose(props) {
   let [sendResult, setSendResult] = React.useState(null);
 
-  React.useLayoutEffect(() => {
-    // resetRecipient();
-    // resetSubject();
-    // resetBody();
-    // resetFooter();
-  }, []);
-
   let {
     value: msgRecipient,
     bind: bindRecipient,

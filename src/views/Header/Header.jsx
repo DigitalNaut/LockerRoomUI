@@ -13,8 +13,6 @@ function Header(props) {
       setUsername(props.credentials.username);
       setRole(props.credentials.role);
     }
-
-    console.log("Creds are:", props.credentials);
   }, [props.credentials]);
 
   return (
