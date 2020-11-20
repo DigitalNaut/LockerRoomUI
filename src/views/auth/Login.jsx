@@ -68,7 +68,7 @@ function Login(props) {
             <br />
             <label>
               Password:
-              <input type="password" {...bindPassword} />
+              <input type="password" placeholder="Password" {...bindPassword} />
             </label>
             <br />
             <label>

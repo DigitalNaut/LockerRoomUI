@@ -89,7 +89,12 @@ function Register(props) {
             <form onSubmit={handleSubmit}>
               <label>
                 Username:
-                <input type="text" placeholder="Username" {...bindUsername} />
+                <input
+                  type="text"
+                  placeholder="Username"
+                  {...bindUsername}
+                  autofocus="true"
+                />
               </label>
               <br />
               <label>
