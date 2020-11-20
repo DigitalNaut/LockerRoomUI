@@ -2,13 +2,12 @@
 
 .component {
   background: $Box;
-  overflow-y: scroll;
   display: flex;
   flex-direction: column;
 }
 
 .inbox {
-  overflow-y: scroll;
+  overflow-y: auto;
   display: flex;
   flex-direction: column;
 }
