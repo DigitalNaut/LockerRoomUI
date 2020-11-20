@@ -63,7 +63,7 @@ function Login(props) {
           <form onSubmit={handleSubmit}>
             <label>
               Username:
-              <input type="text" {...bindUsername} />
+              <input type="text" placeholder="Username" {...bindUsername} autofocus="true" />
             </label>
             <br />
             <label>

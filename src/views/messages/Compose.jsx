@@ -113,7 +113,12 @@ function Compose(props) {
             <form onSubmit={handleSubmit}>
               <label>
                 To:
-                <input type="text" placeholder="Recipient" {...bindRecipient} />
+                <input
+                  type="text"
+                  placeholder="Recipient"
+                  {...bindRecipient}
+                  autofocus="true"
+                />
               </label>
               <br />
               <br />
