@@ -70,7 +70,7 @@ function Register(props) {
       {(warning && (
         <div>
           {warning}
-          <br />{" "}
+          <br />
           <label>
             <button name="retry" type="button" onClick={resetWarning}>
               Retry

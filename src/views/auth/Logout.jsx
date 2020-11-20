@@ -36,11 +36,7 @@ function Logout(props) {
               <Link to="/dashboard">Go back</Link> to the dashboard
             </div>
           </>
-        )) || (
-          <p>
-            You're not logged in. <br />{" "}
-          </p>
-        )}
+        )) || <p>You're not logged in.</p>}
       {
         <p>
           <Link to="/">Homepage</Link>
