@@ -20,6 +20,8 @@ function Inbox(props) {
       {(props.credentials && (
         <>
           <div className={styles.inbox}>
+            <Link to="/dashboard">Dashboard</Link>
+            <br />
             <Link to="/message/new">New message</Link>
             {(inbox &&
               inbox.length &&
