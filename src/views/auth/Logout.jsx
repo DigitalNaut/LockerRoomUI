@@ -24,7 +24,7 @@ function Logout(props) {
     <div className={styles.component}>
       {(loggedOut && (
         <>
-        {(props.credentials && (
+          {(props.credentials && (
             <div>There was an error logging you out.</div>
           )) || <div>You've been logged out.</div>}
         </>
@@ -43,7 +43,9 @@ function Logout(props) {
         )}
       {
         <p>
-          You can <Link to="/login">login here</Link>.
+          <Link to="/">Homepage</Link>
+          <br />
+          <Link to="/login">Login here</Link>
         </p>
       }
     </div>

@@ -19,15 +19,8 @@ function Inbox(props) {
     <div className={styles.component}>
       {(props.credentials && (
         <>
-          {props.credentials.username && (
-            <>
-              <div>Signed in as {props.credentials.username}.</div>
-              <div>
-                Back to <Link to="/dashboard">dashboard</Link>
-              </div>
-            </>
-          )}
           <div className={styles.inbox}>
+            <Link to="/message/new">New message</Link>
             {(inbox &&
               inbox.length &&
               inbox.map((message, i) => {

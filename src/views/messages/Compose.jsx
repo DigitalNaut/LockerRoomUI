@@ -68,15 +68,6 @@ function Compose(props) {
     <>
       {(props.credentials && (
         <div className={styles.box}>
-          {props.credentials.username && (
-            <>
-              <div>Signed in as {props.credentials.username}.</div>
-              <div>
-                Back to <Link to="/dashboard">dashboard</Link>
-              </div>
-              <br />
-            </>
-          )}
           {sendResult && !sendResult.message && (
             <>
               <div>Message sent.</div>

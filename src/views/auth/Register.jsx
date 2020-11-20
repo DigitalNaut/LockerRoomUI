@@ -15,9 +15,7 @@ function Register(props) {
     bind: bindUsername,
     reset: resetUsername,
   } = useInput("");
-  const { value: email, bind: bindEmail, reset: resetEmail } = useInput(
-    ""
-  );
+  const { value: email, bind: bindEmail, reset: resetEmail } = useInput("");
   const {
     value: passwordA,
     bind: bindPasswordA,
@@ -51,8 +49,6 @@ function Register(props) {
         response.message ? response.message : "Error: Could not register you."
       );
     if (response.status === 409) return setWarning(response.message);
-
-    console.log("Response: ", response)
 
     if (!response.username)
       return setWarning(
@@ -103,15 +99,24 @@ function Register(props) {
               <br />
               <label>
                 Password:
-                <input type="password" placeholder="Password" {...bindPasswordA} />
+                <input
+                  type="password"
+                  placeholder="Password"
+                  {...bindPasswordA}
+                />
               </label>
               <br />
               <label>
                 Confirm password:
-                <input type="password" placeholder="Password" {...bindPasswordB} />
+                <input
+                  type="password"
+                  placeholder="Password"
+                  {...bindPasswordB}
+                />
               </label>
               <br />
               <label>
+                <Link to="/">Cancel</Link>
                 <button name="submit" onSubmit={handleSubmit}>
                   Submit
                 </button>

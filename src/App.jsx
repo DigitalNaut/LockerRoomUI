@@ -11,6 +11,7 @@ import Register from "./views/auth/Register";
 import Login from "./views/auth/Login";
 import Logout from "./views/auth/Logout";
 
+import Header from "./views/Header/Header";
 import NotFound from "./views/error/NotFound";
 import Compose from "./views/messages/Compose";
 import Inbox from "./views/messages/Inbox";
@@ -31,18 +32,19 @@ function App(props) {
   return (
     <div className={style.app}>
       <Router>
+        <Header credentials={activeLogin} />
         <Switch>
           <Route exact path="/">
             <Homepage credentials={activeLogin} />
           </Route>
           <Route exact path="/register">
-            <Register credentials={activeLogin}/>
+            <Register credentials={activeLogin} />
           </Route>
           <Route exact path="/login">
             <Login credentials={activeLogin} setActiveLogin={setActiveLogin} />
           </Route>
           <Route exact path="/logout">
-            <Logout credentials={activeLogin} setActiveLogin={setActiveLogin}/>
+            <Logout credentials={activeLogin} setActiveLogin={setActiveLogin} />
           </Route>
           <Route path="/dashboard">
             <Dashboard credentials={activeLogin} />

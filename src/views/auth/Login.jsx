@@ -1,7 +1,7 @@
 import * as React from "react";
 import { useInput } from "../../controllers/hooks/useInput";
 import { login, saveCredentials } from "../../controllers/auth";
-import { Redirect } from "react-router-dom";
+import { Link, Redirect } from "react-router-dom";
 
 import styles from "./Login.module.scss";
 
@@ -60,8 +60,6 @@ function Login(props) {
       {warning && <div>{warning.message}</div>}
       {!props.credentials && (
         <div className={styles.component}>
-          <div>You're not logged in.</div>
-          <br />
           <form onSubmit={handleSubmit}>
             <label>
               Username:
@@ -74,6 +72,8 @@ function Login(props) {
             </label>
             <br />
             <label>
+              <Link to="/">Cancel</Link>
+
               <button name="submit" onSubmit={handleSubmit}>
                 Submit
               </button>
