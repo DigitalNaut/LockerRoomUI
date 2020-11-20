@@ -73,7 +73,6 @@ export async function login(credentials) {
 
 export async function logout(token) {
   try {
-    console.log("Logging out.");
     const response = await getData("http://localhost:3000/auth/logout", token);
 
     if (!response) {
@@ -128,12 +127,6 @@ export function saveCredentials(credentials) {
     else {
       sessionStorage.clear();
       sessionStorage.credentials = JSON.stringify(credentials);
-      console.log(
-        "Session Creds saved:",
-        sessionStorage.credentials,
-        sessionStorage.credentials.username,
-        sessionStorage.credentials.token
-      );
       return sessionStorage.credentials;
     }
 
