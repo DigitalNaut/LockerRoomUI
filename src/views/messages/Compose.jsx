@@ -120,7 +120,7 @@ function Compose(props) {
                   type="text"
                   placeholder="Recipient"
                   {...bindRecipient}
-                  autofocus="true"
+                  autoFocus={true}
                 />
               </label>
               <br />

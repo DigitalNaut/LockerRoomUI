@@ -93,7 +93,7 @@ function Register(props) {
                   type="text"
                   placeholder="Username"
                   {...bindUsername}
-                  autofocus="true"
+                  autoFocus={true}
                 />
               </label>
               <br />
