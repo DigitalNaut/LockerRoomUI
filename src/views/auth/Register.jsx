@@ -72,7 +72,7 @@ function Register(props) {
           {warning}
           <br />{" "}
           <label>
-            <button name="retry" onClick={resetWarning}>
+            <button name="retry" type="button" onClick={resetWarning}>
               Retry
             </button>
           </label>
@@ -117,7 +117,7 @@ function Register(props) {
               <br />
               <label>
                 <Link to="/">Cancel</Link>
-                <button name="submit" onSubmit={handleSubmit}>
+                <button name="submit" type="submit" onSubmit={handleSubmit}>
                   Submit
                 </button>
               </label>

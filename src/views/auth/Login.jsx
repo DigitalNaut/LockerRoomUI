@@ -74,7 +74,7 @@ function Login(props) {
             <label>
               <Link to="/">Cancel</Link>
 
-              <button name="submit" onSubmit={handleSubmit}>
+              <button name="submit" type="submit" onSubmit={handleSubmit}>
                 Submit
               </button>
             </label>

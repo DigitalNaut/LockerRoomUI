@@ -33,8 +33,6 @@ function Compose(props) {
   }
 
   function handleSendAnother(event) {
-    event.preventDefault();
-
     resetRecipient();
     resetSubject();
     resetBody();
@@ -92,7 +90,7 @@ function Compose(props) {
                     <div>
                       <Link to="/messages">Inbox</Link>
                       <br />
-                      <button name="another" onClick={handleSendAnother}>
+                      <button name="another" type="button" onClick={handleSendAnother}>
                         Send another
                       </button>
                     </div>
@@ -105,7 +103,7 @@ function Compose(props) {
             <>
               <p>{sendResult.message}</p>
               <label>
-                <button name="submit" onClick={handleReset}>
+                <button name="submit" type="submit" onClick={handleReset}>
                   Retry
                 </button>
               </label>
@@ -139,7 +137,7 @@ function Compose(props) {
                 <div>
                   <Link to="/dashboard">Cancel</Link>
                 </div>
-                <button name="submit" onSubmit={handleSubmit}>
+                <button name="submit"  type="submit" onSubmit={handleSubmit}>
                   Send
                 </button>
               </label>
