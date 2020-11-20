@@ -90,7 +90,10 @@ function Compose(props) {
                     <div>
                       <Link to="/messages">Inbox</Link>
                       <br />
-                      <button name="another" type="button" onClick={handleSendAnother}>
+                      <button
+                        name="sendAnother"
+                        type="button"
+                        onClick={handleSendAnother}>
                         Send another
                       </button>
                     </div>
@@ -124,7 +127,7 @@ function Compose(props) {
               <br />
               <label>
                 Subject:
-                <input type="text" placeholder="Subject"{...bindSubject} />
+                <input type="text" placeholder="Subject" {...bindSubject} />
               </label>
               <br />
               <label>
@@ -142,7 +145,7 @@ function Compose(props) {
                 <div>
                   <Link to="/dashboard">Cancel</Link>
                 </div>
-                <button name="submit"  type="submit" onSubmit={handleSubmit}>
+                <button name="submit" type="submit" onSubmit={handleSubmit}>
                   Send
                 </button>
               </label>

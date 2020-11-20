@@ -12,12 +12,12 @@ function Login(props) {
     value: username,
     bind: bindUsername,
     reset: resetUsername,
-  } = useInput("marge");
+  } = useInput("");
   const {
     value: password,
     bind: bindPassword,
     reset: resetPassword,
-  } = useInput("12343333");
+  } = useInput("");
 
   const handleSubmit = async (event) => {
     event.preventDefault();
