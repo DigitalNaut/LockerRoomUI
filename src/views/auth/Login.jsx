@@ -37,11 +37,14 @@ function Login(props) {
         response.message ? response.message : "Could not log you in."
       );
 
-    let { token } = response || {};
+    console.log("Login Response:", response);
+    let { token, role } = response || {};
     if (!username || !token)
       setWarning(response.message ? response.message : "Error signing you in.");
 
-    let savedCredentials = JSON.parse(saveCredentials({ username, token }));
+    let savedCredentials = JSON.parse(
+      saveCredentials({ username, token, role })
+    );
 
     if (!savedCredentials)
       setWarning(
@@ -63,7 +66,12 @@ function Login(props) {
           <form onSubmit={handleSubmit}>
             <label>
               Username:
-              <input type="text" placeholder="Username" {...bindUsername} autofocus="true" />
+              <input
+                type="text"
+                placeholder="Username"
+                {...bindUsername}
+                autoFocus={true}
+              />
             </label>
             <br />
             <label>

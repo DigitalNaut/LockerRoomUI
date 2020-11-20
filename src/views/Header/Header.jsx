@@ -5,11 +5,25 @@ import { loadCredentials } from "../../controllers/auth";
 import styles from "./Header.module.scss";
 
 function Header(props) {
+  let [username, setUsername] = React.useState("");
+  let [role, setRole] = React.useState("");
+
+  React.useEffect(() => {
+    if (props.credentials) {
+      setUsername(props.credentials.username);
+      setRole(props.credentials.role);
+    }
+
+    console.log("Creds are:", props.credentials);
+  }, [props.credentials]);
+
   return (
     <div className={styles.component}>
-      {props.credentials && props.credentials.username && (
+      {props.credentials && (
         <>
-          <div>Hello, {props.credentials.username}.</div>
+          <div>
+            Hello, {role} {username}.
+          </div>
           <div>
             <Link to="/logout">Logout</Link>
           </div>

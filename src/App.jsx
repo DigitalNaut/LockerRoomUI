@@ -22,10 +22,10 @@ function App(props) {
 
   React.useEffect(() => {
     let credentials = loadCredentials();
-    let { username, token } = credentials || {};
+    let { username, token, role } = credentials || {};
 
     if (username && token) {
-      setActiveLogin({ username, token });
+      setActiveLogin({ username, token, role });
     }
   }, []);
 
