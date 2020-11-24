@@ -1,20 +1,77 @@
 import * as React from "react";
+import { useHistory } from "react-router";
 import { viewInbox } from "../../controllers/messages";
 
-import styles from "./Inbox.module.scss";
-import { Link } from "react-router-dom";
+import {
+  Container,
+  Drawer,
+  AppBar,
+  Toolbar,
+  Typography,
+  CssBaseline,
+  makeStyles,
+  Divider,
+  Button,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  MenuList,
+  MenuItem,
+  Card,
+  CardContent,
+} from "@material-ui/core";
+
+import InboxIcon from "@material-ui/icons/MoveToInbox";
+import MailIcon from "@material-ui/icons/Mail";
+
+// import styles from "./Inbox.module.scss";
+import { Link, Redirect } from "react-router-dom";
+
+const drawerWidth = 240;
+const useStyles = makeStyles((theme) => ({
+  root: {
+    display: "flex",
+  },
+  appBar: {
+    zIndex: theme.zIndex.drawer + 1,
+  },
+  drawer: {
+    width: drawerWidth,
+    flexShrink: 0,
+  },
+  drawerPaper: {
+    width: drawerWidth,
+    alignItems: "center",
+  },
+  drawerContainer: {
+    overflow: "auto",
+  },
+  card: {
+    margin: "10px 0px",
+    minWidth: 275,
+    fontSize: 16,
+  },
+  content: {
+    flexGrow: 1,
+    padding: theme.spacing(3),
+  },
+}));
 
 function Inbox(props) {
+  const history = useHistory();
   let [messages, setMessages] = React.useState([]);
   let [senders, setSenders] = React.useState([]);
   let [thread, setThread] = React.useState([]);
+
+  const classes = useStyles();
 
   function onSelectThread(sender) {
     setThread(messages[sender]);
   }
 
   React.useLayoutEffect(() => {
-    setSenders(Object.keys(messages));
+    if (messages) setSenders(Object.keys(messages));
   }, [messages]);
 
   React.useLayoutEffect(() => {
@@ -26,63 +83,89 @@ function Inbox(props) {
   }, [props.credentials]);
 
   return (
-    <div className={styles.component}>
-      <div>
-        <Link to="/dashboard">Dashboard</Link>
-        <br />
-        <Link to="/message/new">New message</Link>
-      </div>
-      {(props.credentials && (
-        <div className={styles.inbox}>
-          <div className={styles.senders}>
-            {(senders.length &&
-              senders.map((sender, i) => {
-                return (
-                  <div
-                    key={i}
-                    className={styles.sender}
-                    onClick={(event) => onSelectThread(sender)}>
-                    {sender}
-                  </div>
-                );
-              })) || <p>Your inbox is empty.</p>}
-          </div>
-          <div className={styles.thread}>
-            {(thread.length &&
-              thread.map((message, i) => {
-                return (
-                  <div key={i} className={styles.message}>
-                    <div className={styles.messageField}>
+    <>
+      {props.credentials && (
+        <div className={classes.root}>
+          <CssBaseline />
+          <Drawer
+            className={classes.drawer}
+            variant="permanent"
+            classes={{ paper: classes.drawerPaper }}>
+            <Toolbar />
+            <div className={classes.drawerContainer}>
+              <Button onClick={() => history.push("/dashboard")}>
+                Dashboard
+              </Button>
+              <br />
+              <Button
+                color="primary"
+                variant="contained"
+                onClick={() => history.push("/message/new")}>
+                New message
+              </Button>
+              <Divider />
+              <MenuList>
+                {senders.map((sender, i) => {
+                  return (
+                    <MenuItem
+                      key={i}
+                      className={classes.menuItem}
+                      onClick={(event) => onSelectThread(sender)}>
+                      {sender}
+                    </MenuItem>
+                  );
+                })}
+              </MenuList>
+            </div>
+          </Drawer>
+          <main className={classes.content}>
+            {thread.map((message, i) => {
+              return (
+                <Card key={i} className={classes.card}>
+                  <CardContent>
+                    <Typography
+                      className={classes.pos}
+                      color="textSecondary"
+                      gutterBottom>
                       <b>From: </b>
                       {message.sender}
                       <br />
                       <b>To: </b>
                       {message.recipient}
-                    </div>
-                    <div className={styles.messageField}>
-                      <p>
-                        <b>Subject: </b>
-                        {message.subject}
-                      </p>
-                      <div className={styles.messageBody}>
-                        {message.body}
-                        <p>{message.footer}</p>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })) || <p>No conversation selected.</p>}
-          </div>
+                    </Typography>
+                    <Typography
+                      variant="body1"
+                      className={classes.pos}
+                      color="textPrimary">
+                      <b>Subject: </b>
+                      {message.subject}
+                      <br />
+                      {message.body}
+                    </Typography>
+                    <Typography
+                      variant="body2"
+                      className={classes.pos}
+                      color="textSecondary">
+                      <p>{message.footer}</p>
+                    </Typography>
+                  </CardContent>
+                </Card>
+              );
+            })}
+            {((!senders || !senders.length) && (
+              <Typography variant="h6" color="textSecondary">
+                Your inbox is empty.
+              </Typography>
+            )) ||
+              ((!thread || !thread.length) && (
+                <Typography variant="h6" color="textSecondary">
+                  No conversation selected.
+                </Typography>
+              ))}
+          </main>
         </div>
-      )) || (
-        <>
-          <p>No session found.</p>
-          <p>
-            You can <Link to="login">sign in here</Link>.
-          </p>
-        </>
       )}
-    </div>
+    </>
   );
 }
 

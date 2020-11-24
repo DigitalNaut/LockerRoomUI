@@ -3,9 +3,13 @@ import { useInput } from "../../controllers/hooks/useInput";
 import { sendMsg } from "../../controllers/messages";
 
 import styles from "./Compose.module.scss";
-import { Link, Redirect } from "react-router-dom";
+import { useHistory } from "react-router-dom";
+
+import { Button, Divider, TextField } from "@material-ui/core";
+import MuiAlert from "@material-ui/lab/Alert";
 
 function Compose(props) {
+  const history = useHistory();
   let [sendResult, setSendResult] = React.useState(null);
   let [warning, setWarning] = React.useState("");
 
@@ -49,7 +53,7 @@ function Compose(props) {
     };
 
     if (!msg.subject)
-    return setWarning("Your message does not have a subject.");
+      return setWarning("Your message does not have a subject.");
 
     let response = await sendMsg(
       props.credentials.token,
@@ -65,38 +69,47 @@ function Compose(props) {
 
   return (
     <>
-      {(props.credentials && (
-        <div className={styles.box}>
+      {props.credentials && (
+        <>
           {sendResult && !sendResult.message && (
             <>
-              <div>Message sent.</div>
-              <p>
-                <span>From:{sendResult.sender}</span>
-                <br />
-                <span>To:{sendResult.recipient}</span>
-              </p>
+              <MuiAlert severity="success">Message sent.</MuiAlert>
+              <TextField
+                label="To"
+                disabled
+                value={sendResult.recipient}
+                autoFocus={true}
+              />
+              <Divider />
               {sendResult && (
                 <>
-                  <div>Message:</div>
-                  <div>
-                    <p>
-                      {sendResult.subject}
-                      <br />
-                      {sendResult.body}
-                      <br />
-                      {sendResult.footer && <span>{sendResult.footer}</span>}
-                    </p>
-                  </div>
+                  <TextField
+                    label="Subject"
+                    disabled
+                    value={sendResult.subject}
+                    autoFocus={true}
+                  />
+                  <br />
+                  <TextField
+                    disabled
+                    value={`${sendResult.body}\n${sendResult.footer}`}
+                    multiline
+                  />
                   <label className={styles.messageActions}>
                     <div>
-                      <Link to="/messages">Inbox</Link>
-                      <br />
-                      <button
+                      <Button
                         name="sendAnother"
                         type="button"
+                        variant="outlined"
                         onClick={handleSendAnother}>
                         Send another
-                      </button>
+                      </Button>
+                      <Button
+                        color="primary"
+                        variant="contained"
+                        onClick={() => history.push("/messages")}>
+                        Inbox
+                      </Button>
                     </div>
                   </label>
                 </>
@@ -105,74 +118,49 @@ function Compose(props) {
           )}
           {sendResult && sendResult.message && (
             <>
-              <p>{sendResult.message}</p>
-              <label>
-                <button name="submit" type="submit" onClick={handleReset}>
-                  Retry
-                </button>
-              </label>
+              <MuiAlert severity="warning">{sendResult.message}</MuiAlert>
+              <br />
+              <Button name="submit" type="submit" variant="contained" color="primary" onClick={handleReset}>
+                Retry
+              </Button>
             </>
           )}
           {!sendResult && (
             <>
               {(warning && (
                 <div>
-                  {warning}
+                  <MuiAlert severity="warning">{warning}</MuiAlert>
                   <br />
-                  <label>
-                    <button name="submit" type="submit" onClick={handleRetry}>
-                      Retry
-                    </button>
-                  </label>
+                  <Button name="submit" variant="contained" color="primary" type="submit" onClick={handleRetry}>
+                    Retry
+                  </Button>
                 </div>
               )) || (
-                <form onSubmit={handleSubmit}>
-                  <label>
-                    To:
-                    <input
-                      type="text"
-                      placeholder="Recipient"
-                      {...bindRecipient}
-                      autoFocus={true}
-                    />
-                  </label>
+                <form onSubmit={handleSubmit} autoComplete="off">
+                  <TextField label="To" {...bindRecipient} autoFocus={true} />
+                  <Divider />
+                  <TextField label="Subject" {...bindSubject} />
                   <br />
-                  <br />
-                  <label>
-                    Subject:
-                    <input type="text" placeholder="Subject" {...bindSubject} />
-                  </label>
-                  <br />
-                  <label>
-                    Body:
-                    <input type="textbox" placeholder="Body" {...bindBody} />
-                  </label>
-                  <br />
-                  <label>
-                    Footer:
-                    <input type="text" placeholder="Footer" {...bindFooter} />
-                  </label>
-                  <br />
+                  <TextField label="Body" multiline rows={8} {...bindBody} />
                   <br />
                   <label className={styles.messageActions}>
-                    <div>
-                      <Link to="/dashboard">Cancel</Link>
-                    </div>
-                    <button name="submit" type="submit" onSubmit={handleSubmit}>
+                    <Button
+                      variant="outlined"
+                      onClick={() => history.push("/dashboard")}>
+                      Cancel
+                    </Button>
+                    <Button
+                      type="submit"
+                      color="primary"
+                      variant="contained"
+                      onSubmit={handleSubmit}>
                       Send
-                    </button>
+                    </Button>
                   </label>
                 </form>
               )}
             </>
           )}
-        </div>
-      )) || (
-        <>
-          <p>No session found.</p>
-          <p>
-            You can <Link to="login">sign in here</Link>.
-          </p>
         </>
       )}
     </>

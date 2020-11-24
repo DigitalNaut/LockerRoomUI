@@ -1,24 +1,28 @@
 import * as React from "react";
-import { Link, Redirect } from "react-router-dom";
-import { loadCredentials } from "../../controllers/auth";
+import { Link } from "react-router-dom";
 
 import styles from "./Dashboard.module.scss";
 
+import {
+  MenuItem,
+  MenuList,
+} from "@material-ui/core";
+
 function Dashboard(props) {
   return (
-    <div className={styles.component}>
+    <div>
       {(props.credentials && (
         <>
-          <ul>
-            <li>
+          <MenuList>
+            <MenuItem>
               <Link to="/messages">View your inbox</Link>
-            </li>
-            <li>
+            </MenuItem>
+            <MenuItem>
               <Link to="/message/new">Send a message</Link>
-            </li>
-            <li>Raise a new petition</li>
-            <li>Respond to an event</li>
-          </ul>
+            </MenuItem>
+            <MenuItem>Raise a new petition</MenuItem>
+            <MenuItem>Respond to an event</MenuItem>
+          </MenuList>
         </>
       )) || (
         <>

@@ -1,21 +1,28 @@
 import * as React from "react";
-import { Link } from "react-router-dom";
-import { logout, loadCredentials } from "../../controllers/auth";
+import { Link, useHistory } from "react-router-dom";
+import { logout } from "../../controllers/auth";
+
+import MuiAlert from "@material-ui/lab/Alert";
+import { Button, CircularProgress, Typography } from "@material-ui/core";
 
 import styles from "./Logout.module.scss";
 
 function Logout(props) {
+  const history = useHistory();
   let [loggedOut, setLoggedOut] = React.useState(false);
+  let [warning, setWarning] = React.useState(null);
 
   React.useEffect(() => {
     async function action() {
       if (!props.credentials) return;
 
-      let result = await logout(props.credentials.token);
+      await logout(props.credentials.token);
 
       props.setActiveLogin(null);
 
-      setLoggedOut(true);
+      setTimeout(() => {
+        setLoggedOut(true);
+      }, 300);
     }
     return action();
   }, []);
@@ -25,25 +32,41 @@ function Logout(props) {
       {(loggedOut && (
         <>
           {(props.credentials && (
-            <div>There was an error logging you out.</div>
-          )) || <div>You've been logged out.</div>}
+            <MuiAlert severity="error">
+              There was an error logging you out.
+            </MuiAlert>
+          )) || (
+            <>
+              <MuiAlert severity="success">You've been logged out.</MuiAlert>{" "}
+              <div>
+                <Button variant="outlined" onClick={() => history.push("/")}>
+                  Homepage
+                </Button>
+                <Button
+                  variant="contained"
+                  type="button"
+                  onClick={() => history.push("/login")}>
+                  Login here
+                </Button>
+              </div>
+            </>
+          )}
         </>
       )) ||
-        (props.credentials && (
+        (props.credentials && loggedOut && (
           <>
             <div>We couldn't log you out, {props.credentials.username}</div>
             <div>
               <Link to="/dashboard">Go back</Link> to the dashboard
             </div>
           </>
-        )) || <p>You're not logged in.</p>}
-      {
-        <p>
-          <Link to="/">Homepage</Link>
-          <br />
-          <Link to="/login">Login here</Link>
-        </p>
-      }
+        )) || (
+          <>
+            <Typography>Logging you out...</Typography>
+            <br />
+            <CircularProgress />
+          </>
+        )}
     </div>
   );
 }

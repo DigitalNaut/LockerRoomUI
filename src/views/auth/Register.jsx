@@ -1,12 +1,16 @@
 import * as React from "react";
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import { useInput } from "../../controllers/hooks/useInput";
 
 import { register } from "../../controllers/auth";
 
+import { Button, TextField } from "@material-ui/core";
+import MuiAlert from "@material-ui/lab/Alert";
+
 import styles from "./Register.module.scss";
 
 function Register(props) {
+  const history = useHistory();
   let [warning, setWarning] = React.useState("");
   let [registered, setRegistered] = React.useState(null);
 
@@ -69,63 +73,73 @@ function Register(props) {
     <div className={styles.component}>
       {(warning && (
         <div>
-          {warning}
+          <MuiAlert severity="warning">{warning}</MuiAlert>
           <br />
-          <label>
-            <button name="retry" type="button" onClick={resetWarning}>
-              Retry
-            </button>
-          </label>
+          <Button
+            color="primary"
+            type="button"
+            onClick={() => {
+              history.push("/");
+            }}>
+            Cancel
+          </Button>
+          <Button
+            variant="contained"
+            color="primary"
+            label="retry"
+            type="button"
+            onClick={resetWarning}>
+            Retry
+          </Button>
         </div>
       )) ||
         (registered && (
-          <p>
-            Registered successfully.
+          <>
+            <MuiAlert severity="success">Registered successfully.</MuiAlert>
             <br />
-            You can now <Link to="/login">login</Link>.
-          </p>
+            <p>
+              You may now <Link to="/login">login</Link>.
+            </p>
+          </>
         )) || (
           <>
             <form onSubmit={handleSubmit}>
-              <label>
-                Username:
-                <input
-                  type="text"
-                  placeholder="Username"
-                  {...bindUsername}
-                  autoFocus={true}
-                />
-              </label>
+              <TextField
+                required
+                label="Username"
+                {...bindUsername}
+                autoFocus={true}
+              />
               <br />
-              <label>
-                Email:
-                <input type="email" placeholder="Email" {...bindEmail} />
-              </label>
+              <TextField required label="Email" {...bindEmail} />
               <br />
-              <label>
-                Password:
-                <input
-                  type="password"
-                  placeholder="Password"
-                  {...bindPasswordA}
-                />
-              </label>
+              <TextField
+                required
+                label="Password"
+                type="password"
+                {...bindPasswordA}
+              />
               <br />
-              <label>
-                Confirm password:
-                <input
-                  type="password"
-                  placeholder="Password"
-                  {...bindPasswordB}
-                />
-              </label>
+              <TextField
+                required
+                label="Confirm password"
+                type="password"
+                {...bindPasswordB}
+              />
               <br />
-              <label>
-                <Link to="/">Cancel</Link>
-                <button name="submit" type="submit" onSubmit={handleSubmit}>
+              <div>
+                <Button color="primary" onClick={() => history.push("/")}>
+                  Cancel
+                </Button>
+                <Button
+                  name="submit"
+                  type="submit"
+                  variant="contained"
+                  color="primary"
+                  onSubmit={handleSubmit}>
                   Submit
-                </button>
-              </label>
+                </Button>
+              </div>
             </form>
           </>
         )}

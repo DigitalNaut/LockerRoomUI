@@ -1,3 +1,4 @@
+import { Redirect } from "react-router-dom";
 import * as Storage from "./storage";
 
 export async function postData(url = "", token, data = {}) {
@@ -17,10 +18,14 @@ export async function postData(url = "", token, data = {}) {
       body: JSON.stringify(data), // body data type must match "Content-Type" header
     });
 
-    if (request.response === 401) clearCredentials();
+    if (request.response === 401) return clearCredentials();
 
     let response = await request.json();
     response.status = request.status;
+
+    if (request.status !== 200) {
+      console.log("Response status:", request.status, "Message:", request.message);
+    }
 
     return response;
   } catch (error) {
@@ -44,8 +49,11 @@ export async function getData(url = "", token) {
       referrerPolicy: "no-referrer", // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
     });
 
-    if (request.status === 401) clearCredentials();
-    if (request.status !== 200) return false;
+    if (request.status === 401) return clearCredentials();
+    if (request.status !== 200) {
+      console.log("Response status:", request.status, "Message:", request.message);
+      return null;
+    }
 
     let response = await request.json();
     response.status = request.status;
@@ -77,13 +85,17 @@ export async function logout(token) {
 
     if (!response) {
       console.log("Service unavailable: Could not log out.");
-      return null;
+      return false;
     }
 
-    if (response.status === 401) clearCredentials();
-    clearCredentials();
+    // console.log("Logout response:", response);
 
-    return true;
+    if (response.status !== 200) {
+      console.log("Error: Logout not confirmed by server.");
+      return false;
+    }
+
+    return clearCredentials();
   } catch (error) {
     console.log("Failed to logout: ", error);
   }
@@ -107,8 +119,11 @@ function clearCredentials() {
   try {
     localStorage.clear();
     sessionStorage.clear();
+    return true;
   } catch (error) {
     console.log("Error clearing credentials:", error);
+  } finally {
+    return false;
   }
 }
 
@@ -146,9 +161,7 @@ export function loadCredentials() {
     if (!Storage.storageAvailable("localStorage")) return null;
     else credentials = localStorage.credentials;
 
-    if (!credentials) throw "Credentials are null.";
-
-    return JSON.parse(credentials);
+    return credentials ? JSON.parse(credentials) : null;
   } catch (error) {
     console.log("Failed loading token:", error);
   }

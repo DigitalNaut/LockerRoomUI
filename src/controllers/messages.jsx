@@ -1,4 +1,4 @@
-import { postData, getData } from "./auth";
+import { postData, getData, loadCredentials } from "./auth";
 
 // https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch
 
@@ -31,24 +31,50 @@ function contains(arr, obj) {
 
 export async function viewInbox(token) {
   try {
+    let { username } = loadCredentials();
+
     let response = await getData(
       "http://localhost:3000/api/messages/all",
       token
     );
 
-    let senders = {};
+    let correspondents = {};
+
+    if (!response) return console.log("Response was null");
 
     for (const message of response)
-      if (message.sender)
-        if (!senders[message.sender]) senders[message.sender] = [message];
-        else if (!contains(Object.values(senders[message.sender]), message))
-          senders[message.sender].push(message);
+      if (message.sender && message.recipient) {
+        if (!correspondents[message.sender])
+          correspondents[message.sender] = [];
+        if (message.sender !== message.recipient)
+          if (!correspondents[message.recipient])
+            correspondents[message.recipient] = [];
 
-    for (const messages of Object.values(senders))
+        if (message.sender === username && message.recipient === username) {
+          console.log("Equals");
+          if (!contains(Object.values(correspondents[username]), message))
+            correspondents[username].push(message);
+        } else {
+          if (
+            message.sender !== username &&
+            !contains(Object.values(correspondents[message.sender]), message)
+          )
+            correspondents[message.sender].push(message);
+          else if (
+            message.recipient !== username &&
+            !contains(Object.values(correspondents[message.recipient]), message)
+          )
+            correspondents[message.recipient].push(message);
+        }
+
+        if (!correspondents[username].length) delete correspondents[username];
+      }
+
+    for (const messages of Object.values(correspondents))
       Object.values(messages).sort((a, b) => a.id - b.id);
 
-    return senders;
+    return correspondents;
   } catch (error) {
-    console.log("Composing message failed:", error);
+    console.log("Accessing inbox failed:", error);
   }
 }

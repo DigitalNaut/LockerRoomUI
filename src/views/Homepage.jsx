@@ -1,23 +1,27 @@
 import * as React from "react";
-import { Link } from "react-router-dom";
-import { loadCredentials } from "../controllers/auth";
+import { Link, useHistory } from "react-router-dom";
+
+import Button from "@material-ui/core/Button";
 
 import styles from "./Homepage.module.scss";
 
 function Homepage(props) {
+  const history = useHistory();
+
   return (
     <div className={styles.component}>
       <h1 className={styles.header}>Homepage</h1>
       {(props.credentials && (
         <p>
-          <Link to="/dashboard">Dashboard</Link>
+          <Button onClick={() => history.push("/dashboard")}>Dashboard</Button>
         </p>
       )) || (
         <>
           <p>
-            <Link to="/register">Register</Link>
-            <br />
-            <Link to="/login">Login</Link>
+            <Button variant="outlined" color="primary" onClick={() => history.push("/register")}>Register</Button>
+            <Button variant="contained" color="primary" onClick={() => history.push("/login")}>
+              Login
+            </Button>
           </p>
         </>
       )}
