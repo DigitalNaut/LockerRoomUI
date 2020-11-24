@@ -1,43 +1,43 @@
-@import "../../App.module.scss";
+// @import "../../App.module.scss";
 
-.component {
-  background: $Box;
-  display: flex;
-  flex-direction: row;
-}
+// .component {
+//   background: $Box;
+//   display: flex;
+//   flex-direction: row;
+// }
 
-.inbox {
-  display: flex;
-  flex-direction: row;
-}
+// .inbox {
+//   display: flex;
+//   flex-direction: row;
+// }
 
-.senders {
-  overflow-y: auto;
-  flex-direction: column;
-  display: flex;
-}
+// .senders {
+//   overflow-y: auto;
+//   flex-direction: column;
+//   display: flex;
+// }
 
-.sender {
-  margin: 5px;
-  padding: 5px;
-}
+// .sender {
+//   margin: 5px;
+//   padding: 5px;
+// }
 
-.thread {
-  overflow-y: auto;
-  flex-direction: column;
-  display: flex;
-}
+// .thread {
+//   overflow-y: auto;
+//   flex-direction: column;
+//   display: flex;
+// }
 
-.message {
-  margin: 5px;
-  padding: 5px;
-}
+// .message {
+//   margin: 5px;
+//   padding: 5px;
+// }
 
-.messageField {
-  margin: 5px;
-  padding: 5px;
-}
+// .messageField {
+//   margin: 5px;
+//   padding: 5px;
+// }
 
-.messageBody {
-  margin-left: 15px;
-}
+// .messageBody {
+//   margin-left: 15px;
+// }
