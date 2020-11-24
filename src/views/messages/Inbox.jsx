@@ -1,31 +1,55 @@
 import * as React from "react";
-import { loadCredentials } from "../../controllers/auth";
 import { viewInbox } from "../../controllers/messages";
 
 import styles from "./Inbox.module.scss";
 import { Link } from "react-router-dom";
 
 function Inbox(props) {
-  let [inbox, setInbox] = React.useState([]);
+  let [messages, setMessages] = React.useState([]);
+  let [senders, setSenders] = React.useState([]);
+  let [thread, setThread] = React.useState([]);
+
+  function onSelectThread(sender) {
+    setThread(messages[sender]);
+  }
+
+  React.useLayoutEffect(() => {
+    setSenders(Object.keys(messages));
+  }, [messages]);
 
   React.useLayoutEffect(() => {
     async function init() {
-      if (props.credentials) setInbox(await viewInbox(props.credentials.token));
+      if (props.credentials)
+        setMessages(await viewInbox(props.credentials.token));
     }
     init();
   }, [props.credentials]);
 
   return (
     <div className={styles.component}>
+      <div>
+        <Link to="/dashboard">Dashboard</Link>
+        <br />
+        <Link to="/message/new">New message</Link>
+      </div>
       {(props.credentials && (
-        <>
-          <div className={styles.inbox}>
-            <Link to="/dashboard">Dashboard</Link>
-            <br />
-            <Link to="/message/new">New message</Link>
-            {(inbox &&
-              inbox.length &&
-              inbox.map((message, i) => {
+        <div className={styles.inbox}>
+          <div className={styles.senders}>
+            {(senders.length &&
+              senders.map((sender, i) => {
+                return (
+                  <div
+                    key={i}
+                    className={styles.sender}
+                    onClick={(event) => onSelectThread(sender)}>
+                    {sender}
+                  </div>
+                );
+              })) || <p>Your inbox is empty.</p>}
+          </div>
+          <div className={styles.thread}>
+            {(thread.length &&
+              thread.map((message, i) => {
                 return (
                   <div key={i} className={styles.message}>
                     <div className={styles.messageField}>
@@ -47,9 +71,9 @@ function Inbox(props) {
                     </div>
                   </div>
                 );
-              })) || <p>Inbox is empty.</p>}
+              })) || <p>No conversation selected.</p>}
           </div>
-        </>
+        </div>
       )) || (
         <>
           <p>No session found.</p>

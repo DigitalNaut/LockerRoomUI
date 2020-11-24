@@ -1,7 +1,7 @@
-// MASTERIAL
+// MATERIAL
 
 @mixin background($color) {
-  background-color: "#" $color;
+  background-color: $color;
 }
 
 @mixin shadowRelieve() {
@@ -38,10 +38,9 @@ body {
   display: flex;
   justify-content: center;
   background-color: $Background;
-  font-family: 'Noto Sans', sans-serif;
+  font-family: "Noto Sans", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-
 }
 
 h1 {
@@ -57,7 +56,7 @@ p {
 }
 
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
 }
 
@@ -102,7 +101,5 @@ code {
   }
 }
 
-
 @media (prefers-reduced-motion: no-preference) {
-
 }

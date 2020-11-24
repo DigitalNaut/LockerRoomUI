@@ -1,0 +1,5 @@
+TO-DO:
+-Install:
+-- extract-loader: Extract the CSS into a .css file
+-- file-loader: Serve the .css file as a public URL
+(https://material.io/develop/web/docs/getting-started)

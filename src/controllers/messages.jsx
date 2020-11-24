@@ -22,6 +22,13 @@ export async function sendMsg(token, sender, recipient, msg) {
   }
 }
 
+function contains(arr, obj) {
+  var i = arr.length;
+  while (i--) if (arr[i].id === obj.id) return true;
+
+  return false;
+}
+
 export async function viewInbox(token) {
   try {
     let response = await getData(
@@ -29,7 +36,18 @@ export async function viewInbox(token) {
       token
     );
 
-    return response;
+    let senders = {};
+
+    for (const message of response)
+      if (message.sender)
+        if (!senders[message.sender]) senders[message.sender] = [message];
+        else if (!contains(Object.values(senders[message.sender]), message))
+          senders[message.sender].push(message);
+
+    for (const messages of Object.values(senders))
+      Object.values(messages).sort((a, b) => a.id - b.id);
+
+    return senders;
   } catch (error) {
     console.log("Composing message failed:", error);
   }

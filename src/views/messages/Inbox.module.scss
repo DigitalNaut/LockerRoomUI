@@ -3,13 +3,29 @@
 .component {
   background: $Box;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
 }
 
 .inbox {
-  overflow-y: auto;
   display: flex;
+  flex-direction: row;
+}
+
+.senders {
+  overflow-y: auto;
   flex-direction: column;
+  display: flex;
+}
+
+.sender {
+  margin: 5px;
+  padding: 5px;
+}
+
+.thread {
+  overflow-y: auto;
+  flex-direction: column;
+  display: flex;
 }
 
 .message {
