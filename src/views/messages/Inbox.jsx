@@ -1,32 +1,16 @@
 import * as React from "react";
-import { useHistory } from "react-router";
+import { matchPath, useHistory } from "react-router";
 import { viewInbox } from "../../controllers/messages";
 
 import {
-  Container,
-  Drawer,
-  AppBar,
-  Toolbar,
   Typography,
-  CssBaseline,
   makeStyles,
-  Divider,
-  Button,
-  List,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
-  MenuList,
-  MenuItem,
   Card,
   CardContent,
+  Tabs,
+  Tab,
+  Button,
 } from "@material-ui/core";
-
-import InboxIcon from "@material-ui/icons/MoveToInbox";
-import MailIcon from "@material-ui/icons/Mail";
-
-// import styles from "./Inbox.module.scss";
-import { Link, Redirect } from "react-router-dom";
 
 const drawerWidth = 240;
 const useStyles = makeStyles((theme) => ({
@@ -43,38 +27,44 @@ const useStyles = makeStyles((theme) => ({
   drawerPaper: {
     width: drawerWidth,
     alignItems: "center",
+    padding: theme.spacing(3),
   },
   drawerContainer: {
-    overflow: "auto",
+    display: "flex",
+    flexDirection: "column",
+    overflowY: "auto",
   },
   card: {
-    margin: "10px 0px",
+    margin: theme.spacing(3),
     minWidth: 275,
     fontSize: 16,
+    color: "red",
+  },
+  actions: {
+    display: "flex",
+    flexDirection: "column",
+    padding: theme.spacing(1),
   },
   content: {
     flexGrow: 1,
     padding: theme.spacing(3),
+    paddingTop: "0px",
   },
+  notice: {
+    display: "flex",
+    justifyContent: "space-around",
+  },
+  hidden: { display: "none" },
 }));
 
 function Inbox(props) {
+  const classes = useStyles();
   const history = useHistory();
   let [messages, setMessages] = React.useState([]);
   let [senders, setSenders] = React.useState([]);
-  let [thread, setThread] = React.useState([]);
+  const [tabValue, setTabValue] = React.useState("");
 
-  const classes = useStyles();
-
-  function onSelectThread(sender) {
-    setThread(messages[sender]);
-  }
-
-  React.useLayoutEffect(() => {
-    if (messages) setSenders(Object.keys(messages));
-  }, [messages]);
-
-  React.useLayoutEffect(() => {
+  React.useEffect(() => {
     async function init() {
       if (props.credentials)
         setMessages(await viewInbox(props.credentials.token));
@@ -82,90 +72,163 @@ function Inbox(props) {
     init();
   }, [props.credentials]);
 
+  React.useEffect(() => {
+    if (messages) setSenders(Object.keys(messages));
+  }, [messages]);
+
+  React.useEffect(() => {
+    let location = matchPath(history.location.pathname, {
+      path: "/messages/:user",
+      strict: false,
+      exact: true,
+    });
+
+    let uriParam = location && location.params.user;
+
+    if (!uriParam) return;
+    if (!senders.includes(uriParam)) return setTabValue("error");
+
+    setTabValue(uriParam);
+  }, [history.location.pathname, senders, messages]);
+
+  const handleChange = (event, newValue) => {
+    history.push(`/messages/${newValue}`);
+  };
+
   return (
     <>
       {props.credentials && (
         <div className={classes.root}>
-          <CssBaseline />
-          <Drawer
-            className={classes.drawer}
-            variant="permanent"
-            classes={{ paper: classes.drawerPaper }}>
-            <Toolbar />
-            <div className={classes.drawerContainer}>
-              <Button onClick={() => history.push("/dashboard")}>
-                Dashboard
-              </Button>
-              <br />
+          <div>
+            <div className={classes.actions}>
               <Button
                 color="primary"
                 variant="contained"
                 onClick={() => history.push("/message/new")}>
                 New message
               </Button>
-              <Divider />
-              <MenuList>
+              <Button variant="outlined" onClick={() => history.push("/dashboard")}>
+                Back
+              </Button>
+            </div>
+            <div>
+              <br />
+              <Tabs
+                orientation="vertical"
+                variant="scrollable"
+                value={tabValue}
+                onChange={handleChange}>
                 {senders.map((sender, i) => {
                   return (
-                    <MenuItem
+                    <Tab
                       key={i}
-                      className={classes.menuItem}
-                      onClick={(event) => onSelectThread(sender)}>
-                      {sender}
-                    </MenuItem>
+                      value={sender}
+                      label={sender}
+                      id={`tab-${i}`}></Tab>
                   );
                 })}
-              </MenuList>
+                <Tab
+                  className={classes.hidden}
+                  hidden={true}
+                  key=""
+                  label="Init"
+                  value=""></Tab>
+                <Tab
+                  className={classes.hidden}
+                  key="error"
+                  label="Error"
+                  value="error"></Tab>
+              </Tabs>
             </div>
-          </Drawer>
+          </div>
           <main className={classes.content}>
-            {thread.map((message, i) => {
+            {senders.map((sender, i) => {
               return (
-                <Card key={i} className={classes.card}>
-                  <CardContent>
-                    <Typography
-                      className={classes.pos}
-                      color="textSecondary"
-                      gutterBottom>
-                      <b>From: </b>
-                      {message.sender}
-                      <br />
-                      <b>To: </b>
-                      {message.recipient}
-                    </Typography>
-                    <Typography
-                      variant="body1"
-                      className={classes.pos}
-                      color="textPrimary">
-                      <b>Subject: </b>
-                      {message.subject}
-                      <br />
-                      {message.body}
-                    </Typography>
-                    <Typography
-                      variant="body2"
-                      className={classes.pos}
-                      color="textSecondary">
-                      <p>{message.footer}</p>
-                    </Typography>
-                  </CardContent>
-                </Card>
+                <TabPanel value={tabValue} index={sender} key={i}>
+                  <Typography variant="h6" color="textSecondary">
+                    {`Inbox﹥`}
+                    {sender.replace(/^(\w)/g, (c) => c.toUpperCase())}
+                  </Typography>
+                  {messages[sender].map((message, i) => (
+                    <Message key={i} message={message} />
+                  ))}
+                </TabPanel>
               );
             })}
-            {((!senders || !senders.length) && (
-              <Typography variant="h6" color="textSecondary">
-                Your inbox is empty.
+            <TabPanel value={tabValue} index="">
+              <Typography
+                className={classes.notice}
+                variant="h6"
+                color="textSecondary">
+                No thread selected
               </Typography>
-            )) ||
-              ((!thread || !thread.length) && (
-                <Typography variant="h6" color="textSecondary">
-                  No conversation selected.
-                </Typography>
-              ))}
+            </TabPanel>
+            <TabPanel value={tabValue} index="error">
+              <Typography
+                className={classes.notice}
+                variant="h6"
+                color="textSecondary">
+                {(props.location &&
+                  `No thread found for \'${
+                    matchPath(props.location.pathname, {
+                      path: "/messages/:thread",
+                      exact: true,
+                      strict: false,
+                    })?.params?.thread
+                  }\'`) ||
+                  "nothing"}
+              </Typography>
+            </TabPanel>
           </main>
         </div>
       )}
     </>
+  );
+}
+
+function Message(props) {
+  const {
+    message: { sender, recipient, subject, body, footer },
+  } = props;
+  const classes = useStyles();
+
+  return (
+    <Card className={classes.card}>
+      <CardContent>
+        <Typography color="textSecondary" gutterBottom>
+          <b>From: </b>
+          {sender}
+          <br />
+          <b>To: </b>
+          {recipient}
+        </Typography>
+
+        <Typography variant="body1" color="textPrimary">
+          <b>Subject: </b>
+          {subject}
+          <br />
+          {body}
+        </Typography>
+
+        <Typography variant="body2" color="textSecondary">
+          {footer}
+        </Typography>
+      </CardContent>
+    </Card>
+  );
+}
+
+function TabPanel(props) {
+  const { children, value, index, ...other } = props;
+  return (
+    <div
+      role="tabpanel"
+      hidden={value !== index}
+      id={`contacts-tabpanel-${index}`}
+      aria-labelledby={`contacts-tab-${index}`}
+      {...other}>
+      {value === index && <>{children}</>}
+    </div>
   );
 }
 
