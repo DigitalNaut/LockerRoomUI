@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Link, useHistory } from "react-router-dom";
+import { Link, Redirect, useHistory } from "react-router-dom";
 import { logout } from "../../controllers/auth";
 
 import MuiAlert from "@material-ui/lab/Alert";
@@ -19,10 +19,9 @@ function Logout(props) {
       await logout(props.credentials.token);
 
       props.setActiveLogin(null);
+      setLoggedOut(true);
 
-      setTimeout(() => {
-        setLoggedOut(true);
-      }, 300);
+      
     }
     return action();
   }, []);
@@ -60,6 +59,9 @@ function Logout(props) {
               <Link to="/dashboard">Go back</Link> to the dashboard
             </div>
           </>
+        )) ||
+        (!props.credentials && !loggedOut && (
+          <Redirect push to="/login"/>
         )) || (
           <>
             <Typography>Logging you out...</Typography>

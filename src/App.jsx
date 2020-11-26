@@ -32,37 +32,27 @@ import { loadCredentials } from "./controllers/auth";
 const drawerWidth = 0;
 
 const useStyles = makeStyles((theme) => ({
-  root: {
-    display: "flex",
-  },
-  drawer: {
-    [theme.breakpoints.up("sm")]: {
-      width: drawerWidth,
-      flexShrink: 0,
-    },
-  },
+  root: {},
   appBar: {
-    [theme.breakpoints.up("sm")]: {
-      width: `calc(100% - ${drawerWidth}px)`,
-      marginLeft: drawerWidth,
-    },
-
+    [theme.breakpoints.up("sm")]: {},
     zIndex: theme.zIndex.drawer + 1,
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "center",
   },
-  menuButton: {
-    marginRight: theme.spacing(2),
-    [theme.breakpoints.up("sm")]: {
-      display: "none",
-    },
+  headerBar: {
+    display: "flex",
+    flexDirection: "row",
+    width: "inherit",
+    justifyContent: "space-around",
+    maxWidth: "80vw",
   },
-  // necessary for content to be below app bar
-  toolbar: theme.mixins.toolbar,
   drawerPaper: {
     width: drawerWidth,
   },
   content: {
     flexGrow: 1,
-    padding: theme.spacing(3),
+    padding: theme.spacing(6),
   },
 }));
 
@@ -89,72 +79,61 @@ function App(props) {
   }, []);
 
   return (
-    <Container maxWidth="lg">
+    <Container maxWidth="lg" className={classes.root}>
       <Router>
-        <div className={classes.root}>
-          <CssBaseline />
-          <AppBar position="fixed" className={classes.appBar}>
-            <Toolbar>
-              <Header credentials={activeLogin} />
-            </Toolbar>
-          </AppBar>
-          <nav className={classes.drawer} aria-label="app header" />
-          <main className={classes.content}>
-            <Toolbar />
-            <Switch>
-              <Route exact path="/">
-                <Homepage credentials={activeLogin} />
-              </Route>
-              <Route exact path="/register">
-                <Register credentials={activeLogin} />
-              </Route>
-              <Route
-                exact
-                path="/login"
-                render={() => {
-                  console.log("RESETTING");
-                  setFailedAuthentication(false);
-                }}>
-                <Login
-                  credentials={activeLogin}
-                  setActiveLogin={setActiveLogin}
-                />
-              </Route>
-              <Route exact path="/logout">
-                <Logout
-                  credentials={activeLogin}
-                  setActiveLogin={setActiveLogin}
-                />
-              </Route>
-              {failedAuthentication && !activeLogin && (
-                <Redirect push to="/login" />
+        <CssBaseline />
+        <AppBar position="fixed" className={classes.appBar}>
+          <Toolbar className={classes.headerBar}>
+            <Header credentials={activeLogin} />
+          </Toolbar>
+        </AppBar>
+        <main className={classes.content}>
+          <Toolbar />
+          <Switch>
+            <Route exact path="/">
+              <Homepage credentials={activeLogin} />
+            </Route>
+            <Route exact path="/register">
+              <Register credentials={activeLogin} />
+            </Route>
+            <Route
+              exact
+              path="/login"
+              render={() => {
+                setFailedAuthentication(false);
+              }}>
+              <Login
+                credentials={activeLogin}
+                setActiveLogin={setActiveLogin}
+              />
+            </Route>
+            <Route exact path="/logout">
+              <Logout
+                credentials={activeLogin}
+                setActiveLogin={setActiveLogin}
+              />
+            </Route>
+            {failedAuthentication && !activeLogin && (
+              <Redirect push to="/login" />
+            )}
+            <Route path="/dashboard">
+              <Dashboard credentials={activeLogin} />
+            </Route>
+            <Route
+              path="/messages"
+              render={(routeProps) => (
+                <Inbox credentials={activeLogin} {...routeProps} />
               )}
-              <Route path="/dashboard">
-                <Dashboard credentials={activeLogin} />
-              </Route>
-              {/* <Route path="/lockers">
-                <ComingSoon credentials={activeLogin} />
-              </Route> */}
-              <Route path="/messages">
-                <Inbox credentials={activeLogin} />
-              </Route>
-              <Route path="/message/new">
-                <Compose credentials={activeLogin} />
-              </Route>
-              {/* <Route path="/message/view">
-                <ComingSoon credentials={activeLogin} />
-              </Route>
-              <Route path="/users">
-                <ComingSoon credentials={activeLogin} />
-              </Route>
-              <Route path="/users/:username">
-                <ComingSoon credentials={activeLogin} />
-              </Route> */}
-
-              <Route component={NotFound}></Route>
-            </Switch>
-          </main>
-        </div>
+            />
+            <Route
+              path="/message/new"
+              render={(routeProps) => (
+                <Compose credentials={activeLogin} {...routeProps} />
+              )}
+            />
+            <Route component={NotFound}></Route>
+          </Switch>
+        </main>
       </Router>
     </Container>
   );

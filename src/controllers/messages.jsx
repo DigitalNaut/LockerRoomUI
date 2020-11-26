@@ -51,7 +51,6 @@ export async function viewInbox(token) {
             correspondents[message.recipient] = [];
 
         if (message.sender === username && message.recipient === username) {
-          console.log("Equals");
           if (!contains(Object.values(correspondents[username]), message))
             correspondents[username].push(message);
         } else {

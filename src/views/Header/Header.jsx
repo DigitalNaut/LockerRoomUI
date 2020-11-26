@@ -1,8 +1,6 @@
-import { Button } from "@material-ui/core";
+import { Button, makeStyles, Typography } from "@material-ui/core";
 import * as React from "react";
-import { Link, useHistory } from "react-router-dom";
-
-import styles from "./Header.module.scss";
+import { useHistory } from "react-router-dom";
 
 function Header(props) {
   const history = useHistory();
@@ -16,21 +14,49 @@ function Header(props) {
     }
   }, [props.credentials]);
 
+  function toFirstCase(string) {
+    return string.replace(/^(\w)/g, (c) => c.toUpperCase());
+  }
+
   return (
-    <div className={styles.component}>
-      {props.credentials && (
-        <div>
-          Hello, {role} {username}.
+    <>
+      {(props.credentials && (
+        <>
           <Button
-            variant="outlined"
+            color="inherit"
+            size="small"
+            onClick={() => history.push("/dashboard")}>
+            Dashboard
+          </Button>
+          <Typography variant="h6">
+            {`Hello, ${toFirstCase(role)} ${toFirstCase(username)}`}
+          </Typography>
+          <Button
             color="inherit"
             size="small"
             onClick={() => history.push("/logout")}>
             Logout
           </Button>
-        </div>
+        </>
+      )) || (
+        <>
+          <Button
+            color="inherit"
+            size="small"
+            onClick={() => history.push("/")}>
+            Home
+          </Button>
+          <Typography variant="h4">LOKR</Typography>
+          <Button
+            color="inherit"
+            variant="outlined"
+            size="small"
+            onClick={() => history.push("/login")}>
+            Login
+          </Button>
+        </>
       )}
-    </div>
+    </>
   );
 }
 

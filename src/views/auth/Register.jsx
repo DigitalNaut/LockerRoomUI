@@ -4,12 +4,30 @@ import { useInput } from "../../controllers/hooks/useInput";
 
 import { register } from "../../controllers/auth";
 
-import { Button, TextField } from "@material-ui/core";
+import { Button, makeStyles, TextField, Typography } from "@material-ui/core";
 import MuiAlert from "@material-ui/lab/Alert";
 
-import styles from "./Register.module.scss";
+const useStyles = makeStyles((theme) => ({
+  root: {
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "center",
+  },
+  content: {
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "center",
+    minWidth: "380px",
+    ["& > *"]: {
+      display: "flex",
+      flexDirection: "column",
+      flexGrow: 1,
+    },
+  },
+}));
 
 function Register(props) {
+  const classes = useStyles();
   const history = useHistory();
   let [warning, setWarning] = React.useState("");
   let [registered, setRegistered] = React.useState(null);
@@ -70,79 +88,86 @@ function Register(props) {
   };
 
   return (
-    <div className={styles.component}>
-      {(warning && (
-        <div>
-          <MuiAlert severity="warning">{warning}</MuiAlert>
-          <br />
-          <Button
-            color="primary"
-            type="button"
-            onClick={() => {
-              history.push("/");
-            }}>
-            Cancel
-          </Button>
-          <Button
-            variant="contained"
-            color="primary"
-            label="retry"
-            type="button"
-            onClick={resetWarning}>
-            Retry
-          </Button>
-        </div>
-      )) ||
-        (registered && (
-          <>
-            <MuiAlert severity="success">Registered successfully.</MuiAlert>
+    <div className={classes.root}>
+      <div className={classes.content}>
+        {(warning && (
+          <div>
+            <MuiAlert severity="warning">{warning}</MuiAlert>
             <br />
-            <p>
-              You may now <Link to="/login">login</Link>.
-            </p>
-          </>
-        )) || (
-          <>
-            <form onSubmit={handleSubmit}>
-              <TextField
-                required
-                label="Username"
-                {...bindUsername}
-                autoFocus={true}
-              />
+            <span>
+              <Button
+                color="primary"
+                type="button"
+                onClick={() => {
+                  history.push("/");
+                }}>
+                Cancel
+              </Button>
+              <Button
+                variant="contained"
+                color="primary"
+                label="retry"
+                type="button"
+                onClick={resetWarning}>
+                Retry
+              </Button>
+            </span>
+          </div>
+        )) ||
+          (registered && (
+            <div>
+              <MuiAlert severity="success">Registered successfully.</MuiAlert>
               <br />
-              <TextField required label="Email" {...bindEmail} />
-              <br />
-              <TextField
-                required
-                label="Password"
-                type="password"
-                {...bindPasswordA}
-              />
-              <br />
-              <TextField
-                required
-                label="Confirm password"
-                type="password"
-                {...bindPasswordB}
-              />
-              <br />
-              <div>
-                <Button color="primary" onClick={() => history.push("/")}>
-                  Cancel
-                </Button>
-                <Button
-                  name="submit"
-                  type="submit"
-                  variant="contained"
-                  color="primary"
-                  onSubmit={handleSubmit}>
-                  Submit
-                </Button>
-              </div>
-            </form>
-          </>
-        )}
+              <Typography variant="body1">
+                You may now <Link to="/login">login</Link>.
+              </Typography>
+            </div>
+          )) || (
+            <div className={classes.content}>
+              <Typography variant="h6" color="textSecondary">
+                Register
+              </Typography>
+              <form onSubmit={handleSubmit}>
+                <TextField
+                  required
+                  label="Username"
+                  {...bindUsername}
+                  autoFocus={true}
+                />
+                <br />
+                <TextField required label="Email" {...bindEmail} />
+                <br />
+                <TextField
+                  required
+                  label="Password"
+                  type="password"
+                  {...bindPasswordA}
+                />
+                <br />
+                <TextField
+                  required
+                  label="Confirm password"
+                  type="password"
+                  {...bindPasswordB}
+                />
+                <br />
+                <span>
+                  <Button color="primary" onClick={() => history.goBack()}>
+                    Cancel
+                  </Button>
+                  <Button
+                    name="submit"
+                    type="submit"
+                    variant="contained"
+                    color="primary"
+                    onSubmit={handleSubmit}>
+                    Submit
+                  </Button>
+                </span>
+              </form>
+            </div>
+          )}
+      </div>
     </div>
   );
 }

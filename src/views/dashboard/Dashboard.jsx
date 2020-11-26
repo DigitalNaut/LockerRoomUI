@@ -3,10 +3,7 @@ import { Link } from "react-router-dom";
 
 import styles from "./Dashboard.module.scss";
 
-import {
-  MenuItem,
-  MenuList,
-} from "@material-ui/core";
+import { MenuItem, MenuList, Typography } from "@material-ui/core";
 
 function Dashboard(props) {
   return (
@@ -26,10 +23,10 @@ function Dashboard(props) {
         </>
       )) || (
         <>
-          <p>Session not started.</p>
-          <p>
+          <Typography variant="h5">Session not started.</Typography>
+          <Typography variant="h6">
             Please <Link to="/login">sign in</Link>.
-          </p>
+          </Typography>
         </>
       )}
     </div>

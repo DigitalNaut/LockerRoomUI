@@ -3,22 +3,39 @@ import { useInput } from "../../controllers/hooks/useInput";
 import { login, saveCredentials } from "../../controllers/auth";
 import { Redirect, useHistory } from "react-router-dom";
 
-import { makeStyles, TextField, Button, Snackbar } from "@material-ui/core";
+import {
+  makeStyles,
+  TextField,
+  Button,
+  Snackbar,
+  Divider,
+  Typography,
+} from "@material-ui/core";
 import MuiAlert from "@material-ui/lab/Alert";
 
 import styles from "./Login.module.scss";
 
+const useStyles = makeStyles((theme) => ({
+  root: {
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "center",
+  },
+  content: {
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "center",
+    minWidth: "380px",
+    ["& > *"]: {
+      flexGrow: 1,
+    },
+  },
+}));
+
 function Login(props) {
+  const classes = useStyles();
   let redirectDelay = 800;
   const history = useHistory();
-  const classes = makeStyles((theme) => ({
-    root: {
-      "& > *": {
-        margin: theme.spacing(1),
-        width: "25ch",
-      },
-    },
-  }));
 
   const {
     value: username,
@@ -80,7 +97,7 @@ function Login(props) {
   };
 
   return (
-    <>
+    <div className={classes.root}>
       {
         <Snackbar
           open={open}
@@ -94,11 +111,14 @@ function Login(props) {
       }
       {props.credentials && <Redirect push to="/dashboard" />}
       {!props.credentials && (
-        <div className={styles.component}>
+        <div>
           <form
-            className={classes.root}
+            className={classes.content}
             autoComplete="off"
             onSubmit={handleSubmit}>
+            <Typography variant="h6" color="textSecondary">
+              Login
+            </Typography>
             <TextField
               required
               id="standard-basic"
@@ -131,12 +151,20 @@ function Login(props) {
                 onSubmit={handleSubmit}>
                 Submit
               </Button>
+              <Divider />
+              <Button
+                name="register"
+                type="button"
+                color="primary"
+                onClick={() => history.push("/register")}>
+                Register
+              </Button>
             </div>
           </form>
         </div>
       )}
       {warning && <MuiAlert severity="warning">{warning}</MuiAlert>}
-    </>
+    </div>
   );
 }
 
