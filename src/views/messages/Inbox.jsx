@@ -10,6 +10,7 @@ import {
   Tabs,
   Tab,
   Button,
+  CircularProgress,
 } from "@material-ui/core";
 
 const drawerWidth = 240;
@@ -52,7 +53,8 @@ const useStyles = makeStyles((theme) => ({
   },
   notice: {
     display: "flex",
-    justifyContent: "space-around",
+    flexDirection: "column",
+    alignItems: "center",
   },
   hidden: { display: "none" },
 }));
@@ -60,14 +62,21 @@ const useStyles = makeStyles((theme) => ({
 function Inbox(props) {
   const classes = useStyles();
   const history = useHistory();
-  let [messages, setMessages] = React.useState([]);
-  let [senders, setSenders] = React.useState([]);
-  const [tabValue, setTabValue] = React.useState("");
+  let [messages, setMessages] = React.useState(null);
+  let [senders, setSenders] = React.useState(null);
+  const [tabValue, setTabValue] = React.useState("loading");
 
   React.useEffect(() => {
+    let credentials = props.credentials,
+      { token } = credentials || {};
+
     async function init() {
-      if (props.credentials)
-        setMessages(await viewInbox(props.credentials.token));
+      try {
+        if (credentials) setMessages(await viewInbox(token));
+      } catch (error) {
+        if (error.message.match(/NetworkError/g)) setTabValue("noservice");
+        else setTabValue("error");
+      }
     }
     init();
   }, [props.credentials]);
@@ -75,6 +84,13 @@ function Inbox(props) {
   React.useEffect(() => {
     if (messages) setSenders(Object.keys(messages));
   }, [messages]);
+
+  React.useEffect(() => {
+    if (!senders) return;
+
+    if (!senders.length) setTabValue("empty");
+    else if (["empty", "loading"].includes(tabValue)) setTabValue("init");
+  }, [senders, tabValue]);
 
   React.useEffect(() => {
     let location = matchPath(history.location.pathname, {
@@ -86,7 +102,7 @@ function Inbox(props) {
     let uriParam = location && location.params.user;
 
     if (!uriParam) return;
-    if (!senders.includes(uriParam)) return setTabValue("error");
+    if (senders && !senders.includes(uriParam)) return setTabValue("error");
 
     setTabValue(uriParam);
   }, [history.location.pathname, senders, messages]);
@@ -107,7 +123,9 @@ function Inbox(props) {
                 onClick={() => history.push("/message/new")}>
                 New message
               </Button>
-              <Button variant="outlined" onClick={() => history.push("/dashboard")}>
+              <Button
+                variant="outlined"
+                onClick={() => history.push("/dashboard")}>
                 Back
               </Button>
             </div>
@@ -118,49 +136,69 @@ function Inbox(props) {
                 variant="scrollable"
                 value={tabValue}
                 onChange={handleChange}>
-                {senders.map((sender, i) => {
-                  return (
-                    <Tab
-                      key={i}
-                      value={sender}
-                      label={sender}
-                      id={`tab-${i}`}></Tab>
-                  );
-                })}
+                {senders &&
+                  senders.map((sender, i) => {
+                    return (
+                      <Tab
+                        key={i}
+                        value={sender}
+                        label={sender}
+                        id={`tab-${i}`}></Tab>
+                    );
+                  })}
+                <Tab
+                  className={classes.hidden}
+                  key="loading"
+                  value="loading"></Tab>
                 <Tab
                   className={classes.hidden}
                   hidden={true}
-                  key=""
-                  label="Init"
-                  value=""></Tab>
-                <Tab
-                  className={classes.hidden}
-                  key="error"
-                  label="Error"
-                  value="error"></Tab>
+                  key="init"
+                  value="init"></Tab>
+                <Tab className={classes.hidden} key="empty" value="empty"></Tab>
+                <Tab className={classes.hidden} key="error" value="error"></Tab>
               </Tabs>
             </div>
           </div>
           <main className={classes.content}>
-            {senders.map((sender, i) => {
-              return (
-                <TabPanel value={tabValue} index={sender} key={i}>
-                  <Typography variant="h6" color="textSecondary">
-                    {`Inbox﹥`}
-                    {sender.replace(/^(\w)/g, (c) => c.toUpperCase())}
-                  </Typography>
-                  {messages[sender].map((message, i) => (
-                    <Message key={i} message={message} />
-                  ))}
-                </TabPanel>
-              );
-            })}
-            <TabPanel value={tabValue} index="">
+            {senders &&
+              senders.map((sender, i) => {
+                return (
+                  <TabPanel value={tabValue} index={sender} key={i}>
+                    <Typography variant="h6" color="textSecondary">
+                      {`Inbox﹥`}
+                      {sender.replace(/^(\w)/g, (c) => c.toUpperCase())}
+                    </Typography>
+                    {messages[sender].map((message, i) => (
+                      <Message key={i} message={message} />
+                    ))}
+                  </TabPanel>
+                );
+              })}
+            <TabPanel value={tabValue} index="loading">
+              <Typography
+                className={classes.notice}
+                variant="h6"
+                color="textSecondary">
+                Loading...
+                <br />
+                <CircularProgress />
+              </Typography>
+            </TabPanel>
+            <TabPanel value={tabValue} index="init">
               <Typography
                 className={classes.notice}
                 variant="h6"
                 color="textSecondary">
                 No thread selected
+              </Typography>
+            </TabPanel>
+            <TabPanel value={tabValue} index="empty">
+              <Typography
+                className={classes.notice}
+                variant="h6"
+                color="textSecondary">
+                {props.location && `Your Inbox is empty`}
               </Typography>
             </TabPanel>
             <TabPanel value={tabValue} index="error">
@@ -169,14 +207,22 @@ function Inbox(props) {
                 variant="h6"
                 color="textSecondary">
                 {(props.location &&
-                  `No thread found for \'${
+                  `No thread found for '${
                     matchPath(props.location.pathname, {
                       path: "/messages/:thread",
                       exact: true,
                       strict: false,
                     })?.params?.thread
-                  }\'`) ||
+                  }'`) ||
                   "nothing"}
+              </Typography>
+            </TabPanel>
+            <TabPanel value={tabValue} index="noservice">
+              <Typography
+                className={classes.notice}
+                variant="h6"
+                color="textSecondary">
+                Service unavailable
               </Typography>
             </TabPanel>
           </main>

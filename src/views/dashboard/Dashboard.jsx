@@ -8,17 +8,23 @@ import { MenuItem, MenuList, Typography } from "@material-ui/core";
 function Dashboard(props) {
   return (
     <div>
+      <Typography variant="h6" color="textSecondary">
+        {"Dashboard"}
+      </Typography>
       {(props.credentials && (
         <>
           <MenuList>
-            <MenuItem>
-              <Link to="/messages">View your inbox</Link>
-            </MenuItem>
-            <MenuItem>
-              <Link to="/message/new">Send a message</Link>
-            </MenuItem>
-            <MenuItem>Raise a new petition</MenuItem>
-            <MenuItem>Respond to an event</MenuItem>
+            <Link to="/messages">
+              <MenuItem>View your Inbox</MenuItem>
+            </Link>
+            <Link to="/message/new">
+              <MenuItem>Send a message</MenuItem>
+            </Link>
+            <Link to="/event/new">
+              <MenuItem>Create an Event</MenuItem>
+            </Link>
+            <MenuItem>Raise a New Petition</MenuItem>
+            <MenuItem>Respond to an Event</MenuItem>
           </MenuList>
         </>
       )) || (

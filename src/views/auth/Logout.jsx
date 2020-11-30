@@ -5,12 +5,9 @@ import { logout } from "../../controllers/auth";
 import MuiAlert from "@material-ui/lab/Alert";
 import { Button, CircularProgress, Typography } from "@material-ui/core";
 
-import styles from "./Logout.module.scss";
-
 function Logout(props) {
   const history = useHistory();
   let [loggedOut, setLoggedOut] = React.useState(false);
-  let [warning, setWarning] = React.useState(null);
 
   React.useEffect(() => {
     async function action() {
@@ -27,7 +24,7 @@ function Logout(props) {
   }, []);
 
   return (
-    <div className={styles.component}>
+    <div>
       {(loggedOut && (
         <>
           {(props.credentials && (

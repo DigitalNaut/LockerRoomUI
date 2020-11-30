@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-export const useInput = (initialValue) => {
+export const useStringInput = (initialValue) => {
   const [value, setValue] = useState(initialValue);
 
   return {
@@ -11,6 +11,38 @@ export const useInput = (initialValue) => {
       value,
       onChange: (event) => {
         setValue(event.target.value);
+      },
+    },
+  };
+};
+
+export const useBoolInput = (initialValue) => {
+  const [checked, setChecked] = useState(initialValue);
+
+  return {
+    checked,
+    setChecked,
+    reset: () => setChecked(false),
+    bind: {
+      checked,
+      onChange: (event) => {
+        setChecked(event.target.checked);
+      },
+    },
+  };
+};
+
+export const useNullableInput = (initialValue) => {
+  const [checked, setChecked] = useState(initialValue);
+
+  return {
+    checked,
+    setChecked,
+    reset: () => setChecked(null),
+    bind: {
+      checked,
+      onChange: (event) => {
+        setChecked(event.target.checked);
       },
     },
   };

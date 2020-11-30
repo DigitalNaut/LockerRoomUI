@@ -14,7 +14,6 @@ import {
   CssBaseline,
   makeStyles,
   Toolbar,
-  IconButton,
 } from "@material-ui/core";
 
 import Dashboard from "./views/dashboard/Dashboard";
@@ -23,11 +22,13 @@ import Register from "./views/auth/Register";
 import Login from "./views/auth/Login";
 import Logout from "./views/auth/Logout";
 
-import Header from "./views/Header/Header";
+import Header from "./views/header/Header";
 import NotFound from "./views/error/NotFound";
-import Compose from "./views/messages/Compose";
+import Composer from "./views/messages/Composer";
+import EventCreator from "./views/events/EventCreator";
 import Inbox from "./views/messages/Inbox";
-import { loadCredentials } from "./controllers/auth";
+import { loadSession } from "./controllers/auth";
+import RouterBreadcrumbs from "./components/RouterBreadcrumbs";
 
 const drawerWidth = 0;
 
@@ -63,19 +64,9 @@ function App(props) {
   let classes = useStyles();
 
   React.useLayoutEffect(() => {
-    let credentials = loadCredentials();
-
-    if (!credentials) {
-      console.log("Failed authentication");
-
-      setFailedAuthentication(true);
-    }
-
-    let { username, token, role } = credentials || {};
-
-    if (username && token) {
-      setActiveLogin({ username, token, role });
-    }
+    let credentials = loadSession();
+    if (credentials) setActiveLogin(credentials);
+    else setFailedAuthentication(true);
   }, []);
 
   return (
@@ -93,6 +84,11 @@ function App(props) {
             <Route exact path="/">
               <Homepage credentials={activeLogin} />
             </Route>
+            
+            <Route exact path="/test">
+              <RouterBreadcrumbs credentials={activeLogin} />
+            </Route>
+
             <Route exact path="/register">
               <Register credentials={activeLogin} />
             </Route>
@@ -128,9 +124,16 @@ function App(props) {
             <Route
               path="/message/new"
               render={(routeProps) => (
-                <Compose credentials={activeLogin} {...routeProps} />
+                <Composer credentials={activeLogin} {...routeProps} />
               )}
             />
+            <Route
+              path="/event/new"
+              render={(routeProps) => (
+                <EventCreator credentials={activeLogin} {...routeProps} />
+              )}
+            />
+            <Route path="/noservice" component={NotFound}></Route>
             <Route component={NotFound}></Route>
           </Switch>
         </main>

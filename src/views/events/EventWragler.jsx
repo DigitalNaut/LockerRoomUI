@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Link, useHistory } from "react-router-dom";
-import { useStringInput } from "../../controllers/hooks/useInput";
+import { useInput } from "../../controllers/hooks/useInput";
 
 import { register } from "../../controllers/auth";
 
@@ -13,24 +13,15 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: "row",
     justifyContent: "center",
   },
-  form: {
+  content: {
     display: "flex",
     flexDirection: "column",
-    justifyContent: "left",
-    minWidth: "400px",
-    maxWidth: "860px",
+    justifyContent: "center",
+    minWidth: "380px",
     ["& > *"]: {
       display: "flex",
       flexDirection: "column",
       flexGrow: 1,
-      marginBottom: theme.spacing(1.5),
-    },
-  },
-  inlineField: {
-    display: "flex",
-    flexDirection: "row",
-    ["& > :not(:last-child)"]: {
-      marginRight: "30px",
     },
   },
 }));
@@ -45,20 +36,18 @@ function Register(props) {
     value: username,
     bind: bindUsername,
     reset: resetUsername,
-  } = useStringInput("");
-  const { value: email, bind: bindEmail, reset: resetEmail } = useStringInput(
-    ""
-  );
+  } = useInput("");
+  const { value: email, bind: bindEmail, reset: resetEmail } = useInput("");
   const {
     value: passwordA,
     bind: bindPasswordA,
     reset: resetPasswordA,
-  } = useStringInput("");
+  } = useInput("");
   const {
     value: passwordB,
     bind: bindPasswordB,
     reset: resetPasswordB,
-  } = useStringInput("");
+  } = useInput("");
 
   function resetWarning() {
     setWarning("");
@@ -138,7 +127,7 @@ function Register(props) {
               <Typography variant="h6" color="textSecondary">
                 Register
               </Typography>
-              <form className={classes.form} onSubmit={handleSubmit}>
+              <form onSubmit={handleSubmit}>
                 <TextField
                   required
                   label="Username"
@@ -162,7 +151,7 @@ function Register(props) {
                   {...bindPasswordB}
                 />
                 <br />
-                <span className={classes.inlineField}>
+                <span>
                   <Button color="primary" onClick={() => history.goBack()}>
                     Cancel
                   </Button>

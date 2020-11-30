@@ -1,7 +1,8 @@
-import { Redirect } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 import * as Storage from "./storage";
 
 export async function postData(url = "", token, data = {}) {
+  
   try {
     const request = await fetch(url, {
       method: "POST", // *GET, POST, PUT, DELETE, etc.
@@ -24,12 +25,18 @@ export async function postData(url = "", token, data = {}) {
     response.status = request.status;
 
     if (request.status !== 200) {
-      console.log("Response status:", request.status, "Message:", request.message);
+      console.log(
+        "Response status:",
+        request.status,
+        "Message:",
+        request.message
+      );
     }
 
     return response;
   } catch (error) {
-    console.log("Data post failed: ", error);
+    console.log("Data POST failed: ", error);
+    return error;
   }
 }
 
@@ -51,7 +58,12 @@ export async function getData(url = "", token) {
 
     if (request.status === 401) return clearCredentials();
     if (request.status !== 200) {
-      console.log("Response status:", request.status, "Message:", request.message);
+      console.log(
+        "Response status:",
+        request.status,
+        "Message:",
+        request.message
+      );
       return null;
     }
 
@@ -60,7 +72,7 @@ export async function getData(url = "", token) {
 
     return response;
   } catch (error) {
-    console.log("Data post failed: ", error);
+    throw error;
   }
 }
 
@@ -165,4 +177,20 @@ export function loadCredentials() {
   } catch (error) {
     console.log("Failed loading token:", error);
   }
+}
+
+export function loadSession() {
+  let credentials = loadCredentials();
+
+  if (!credentials) {
+    console.log("Warning: Session not authenticated");
+    return null;
+  }
+
+  let { username, token } = credentials || {};
+
+  if (username && token) return credentials;
+
+  console.log("Error: Invalid credentials");
+  return null;
 }

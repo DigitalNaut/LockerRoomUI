@@ -1,5 +1,5 @@
 import * as React from "react";
-import { useInput } from "../../controllers/hooks/useInput";
+import { useStringInput } from "../../controllers/hooks/useInput";
 import { login, saveCredentials } from "../../controllers/auth";
 import { Redirect, useHistory } from "react-router-dom";
 
@@ -13,21 +13,23 @@ import {
 } from "@material-ui/core";
 import MuiAlert from "@material-ui/lab/Alert";
 
-import styles from "./Login.module.scss";
-
 const useStyles = makeStyles((theme) => ({
   root: {
     display: "flex",
     flexDirection: "row",
     justifyContent: "center",
   },
-  content: {
+  form: {
     display: "flex",
     flexDirection: "column",
-    justifyContent: "center",
-    minWidth: "380px",
+    justifyContent: "left",
+    minWidth: "400px",
+    maxWidth: "860px",
     ["& > *"]: {
+      display: "flex",
+      flexDirection: "column",
       flexGrow: 1,
+      marginBottom: theme.spacing(1.5),
     },
   },
 }));
@@ -41,18 +43,18 @@ function Login(props) {
     value: username,
     bind: bindUsername,
     reset: resetUsername,
-  } = useInput("");
+  } = useStringInput("");
   const {
     value: password,
     bind: bindPassword,
     reset: resetPassword,
-  } = useInput("");
+  } = useStringInput("");
 
-  let [warning, setWarning] = React.useState(null);
-  const [open, setOpen] = React.useState(false);
+  const [warning, setWarning] = React.useState(null);
+  const [success, setSuccess] = React.useState(false);
 
   const handleOpen = () => {
-    setOpen(true);
+    setSuccess(true);
   };
 
   const handleClose = (event, reason) => {
@@ -60,11 +62,14 @@ function Login(props) {
       return;
     }
 
-    setOpen(false);
+    setWarning("");
+    setSuccess("");
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+
+    setWarning("");
 
     let credentials = {
       username: username,
@@ -98,72 +103,81 @@ function Login(props) {
 
   return (
     <div className={classes.root}>
-      {
-        <Snackbar
-          open={open}
-          anchorOrigin={{ vertical: "top", horizontal: "center" }}
-          autoHideDuration={redirectDelay}
-          onClose={handleClose}>
-          <MuiAlert onClose={handleClose} severity="success">
-            Signed in successfully!
-          </MuiAlert>
-        </Snackbar>
-      }
       {props.credentials && <Redirect push to="/dashboard" />}
-      {!props.credentials && (
-        <div>
-          <form
-            className={classes.content}
-            autoComplete="off"
-            onSubmit={handleSubmit}>
-            <Typography variant="h6" color="textSecondary">
-              Login
-            </Typography>
-            <TextField
-              required
-              id="standard-basic"
-              label="Username"
-              autoFocus={true}
-              {...bindUsername}
-            />
-            <br />
-            <TextField
-              required
-              id="standard-password-input"
-              label="Password"
-              type="password"
-              autoComplete="current-password"
-              {...bindPassword}
-            />
-            <br />
+      {
+        <>
+          <Snackbar
+            open={warning || success ? true : false}
+            anchorOrigin={{ vertical: "top", horizontal: "center" }}
+            autoHideDuration={redirectDelay}
+            onClose={handleClose}>
             <div>
-              <Button
-                color="primary"
-                variant="outlined"
-                onClick={() => history.push("/")}>
-                Cancel
-              </Button>
-              <Button
-                variant="contained"
-                name="submit"
-                type="submit"
-                color="primary"
-                onSubmit={handleSubmit}>
-                Submit
-              </Button>
-              <Divider />
-              <Button
-                name="register"
-                type="button"
-                color="primary"
-                onClick={() => history.push("/register")}>
-                Register
-              </Button>
+              {warning && <MuiAlert severity="warning">{warning}</MuiAlert>}{" "}
+              {success && (
+                <MuiAlert onClose={handleClose} severity="success">
+                  Signed in successfully!
+                </MuiAlert>
+              )}
             </div>
-          </form>
-        </div>
-      )}
-      {warning && <MuiAlert severity="warning">{warning}</MuiAlert>}
+          </Snackbar>
+        </>
+      }
+      <div className={classes.content}>
+        {!props.credentials && (
+          <>
+            <form
+              className={classes.form}
+              autoComplete="off"
+              onSubmit={handleSubmit}>
+              <Typography variant="h6" color="textSecondary">
+                Login
+              </Typography>
+              <TextField
+                required
+                id="standard-basic"
+                label="Username"
+                autoFocus={true}
+                {...bindUsername}
+              />
+              <br />
+              <TextField
+                required
+                id="standard-password-input"
+                label="Password"
+                type="password"
+                autoComplete="current-password"
+                {...bindPassword}
+              />
+              <br />
+              <span>
+                <span className={classes.inlineField}>
+                  <Button
+                    color="primary"
+                    variant="outlined"
+                    onClick={() => history.push("/")}>
+                    Cancel
+                  </Button>
+                  <Button
+                    variant="contained"
+                    name="submit"
+                    type="submit"
+                    color="primary"
+                    onSubmit={handleSubmit}>
+                    Submit
+                  </Button>
+                </span>
+                <Button
+                  name="register"
+                  type="button"
+                  color="primary"
+                  onClick={() => history.push("/register")}>
+                  Register
+                </Button>
+              </span>
+            </form>
+          </>
+        )}
+      </div>
     </div>
   );
 }
