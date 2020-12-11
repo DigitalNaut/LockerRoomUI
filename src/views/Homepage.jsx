@@ -3,7 +3,6 @@ import { Link, useHistory } from "react-router-dom";
 
 import Button from "@material-ui/core/Button";
 
-import styles from "./Homepage.module.scss";
 import { Divider, makeStyles, Typography } from "@material-ui/core";
 
 const useStyles = makeStyles({

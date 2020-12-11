@@ -1,17 +1,16 @@
 import * as React from "react";
-import {
-  useStringInput,
-  useBoolInput,
-  useNullableInput,
-} from "../../controllers/hooks/useInput";
+import { useStringInput, useBoolInput } from "../../controllers/hooks/useInput";
 import { createEvent } from "../../controllers/events";
 
 import {
   Button,
   Checkbox,
-  Divider,
+  FormControl,
   FormControlLabel,
+  InputLabel,
   makeStyles,
+  MenuItem,
+  Select,
   TextField,
   Typography,
 } from "@material-ui/core";
@@ -32,7 +31,7 @@ const useStyles = makeStyles((theme) => ({
     width: "60vw",
     minWidth: "400px",
     maxWidth: "860px",
-    ["& > :not(:last-child)"]: {
+    ["& > *"]: {
       marginBottom: theme.spacing(1.5),
     },
   },
@@ -53,11 +52,19 @@ const useStyles = makeStyles((theme) => ({
       marginRight: "30px",
     },
   },
+  label: {
+    minWidth: 80,
+  },
+  field: {
+    flexGrow: 1,
+    minWidth: 150,
+  },
 }));
 
 function EventCreator(props) {
   const classes = useStyles();
   let [sendResult, setSendResult] = React.useState(null);
+  let [requiredResponseType, setRequiredResponseType] = React.useState("text");
   let [alert, setAlert] = React.useState("");
 
   let { value: msgTitle, bind: bindTitle, reset: resetTitle } = useStringInput(
@@ -69,9 +76,14 @@ function EventCreator(props) {
   let { value: msgType, bind: bindType, reset: resetType } = useStringInput("");
   let { value: msgCode, bind: bindCode, reset: resetCode } = useStringInput("");
   let {
-    value: msgUserFilter,
-    bind: bindUserFilter,
-    reset: resetUserFilter,
+    value: tmplLabel,
+    bind: bindTmplLabel,
+    reset: resetTmplLabel,
+  } = useStringInput("");
+  let {
+    value: tmplOptions,
+    bind: bindTmplOptions,
+    reset: resetTmplOptions,
   } = useStringInput("");
   let {
     checked: msgMandatory,
@@ -82,12 +94,13 @@ function EventCreator(props) {
     value: msgExpDate,
     bind: bindExpDate,
     reset: resetExpDate,
-  } = useNullableInput(null);
-  let {
-    value: msgTemplate,
-    bind: bindTemplate,
-    reset: resetTemplate,
   } = useStringInput("");
+
+  let {
+    checked: msgNeedsResponse,
+    bind: bindNeedsResponse,
+    reset: resetNeedsResponse,
+  } = useBoolInput(false);
 
   function handleDismissAlert(event) {
     event.preventDefault();
@@ -100,10 +113,11 @@ function EventCreator(props) {
     resetAbout();
     resetType();
     resetCode();
-    resetUserFilter();
     resetMandatory();
     resetExpDate();
-    resetTemplate();
+    resetNeedsResponse();
+    resetTmplLabel();
+    resetTmplOptions();
 
     setSendResult(null);
   }
@@ -120,18 +134,25 @@ function EventCreator(props) {
       about: msgAbout,
       type: msgType,
       code: msgCode,
-      userFilter: msgUserFilter,
+      userFilter: "",
       mandatory: Boolean(msgMandatory),
-      expDate: msgExpDate,
-      template: msgTemplate,
+      expDate: new Date(msgExpDate),
+      template: "",
     };
+
+    if (msgNeedsResponse)
+      event.template = JSON.stringify({
+        type: requiredResponseType,
+        label: tmplLabel,
+        options: tmplOptions,
+      });
 
     console.log("Event:", event);
 
-    let alertTemplate = "The event requires a ";
-    if (!event.title) return setAlert(`${alertTemplate}title.`);
-    if (!event.type) return setAlert(`${alertTemplate}type.`);
-    if (!event.code) return setAlert(`${alertTemplate}code.`);
+    let alertText = "The event requires a ";
+    if (!event.title) return setAlert(`${alertText}title.`);
+    if (!event.type) return setAlert(`${alertText}type.`);
+    if (!event.code) return setAlert(`${alertText}code.`);
 
     try {
       let response = await createEvent(Object.values(event));
@@ -221,7 +242,6 @@ function EventCreator(props) {
                 autoFocus={true}
                 charLimit={100}
               />
-              <Divider />
               <CountedTextField
                 label="Event description"
                 multiline
@@ -267,21 +287,50 @@ function EventCreator(props) {
                   label="Mandatory"
                 />
               </span>
-              <CountedTextField
-                label="User Filter"
-                multiline
-                rows={4}
-                binder={bindUserFilter}
-                charLimit={255}
+
+              <FormControlLabel
+                className={classes.evenWidthField}
+                control={
+                  <Checkbox
+                    name="responseRequired"
+                    color="primary"
+                    {...bindNeedsResponse}
+                  />
+                }
+                label="Response required"
               />
 
-              <CountedTextField
-                label="Petition template"
-                multiline
-                rows={8}
-                binder={bindTemplate}
-                charLimit={255}
-              />
+              {msgNeedsResponse && (
+                <div className={classes.inlineField}>
+                  <FormControl className={classes.label}>
+                    <InputLabel>Type</InputLabel>
+                    <Select
+                      value={requiredResponseType}
+                      onChange={(event) => {
+                        setRequiredResponseType(event.target.value);
+                      }}>
+                      <MenuItem value={"text"}>Text</MenuItem>
+                      <MenuItem value={"select"}>Selection</MenuItem>
+                    </Select>
+                  </FormControl>
+                  {requiredResponseType && (
+                    <TextField
+                      label="Label"
+                      className={classes.field}
+                      {...bindTmplLabel}
+                      required
+                    />
+                  )}
+                  {requiredResponseType === "select" && (
+                    <TextField
+                      label="Options"
+                      className={classes.field}
+                      {...bindTmplOptions}
+                      required
+                    />
+                  )}
+                </div>
+              )}
 
               <label>
                 <Button

@@ -59,11 +59,14 @@ function contains(arr, obj) {
   return false;
 }
 
-export async function viewEventsByUser() {
+export async function viewEventsByType(type = "public") {
   try {
     let { token } = loadCredentials();
 
-    let response = await getData("http://localhost:3000/api/events/my", token);
+    let response = await getData(
+      `http://localhost:3000/api/events/type/${type}`,
+      token
+    );
 
     if (!response) return console.log("Response was null");
 
@@ -72,6 +75,102 @@ export async function viewEventsByUser() {
     return response;
   } catch (error) {
     console.log("Error: Loading events failed:", error);
+    throw error;
+  }
+}
+
+export async function viewEventsByUser() {
+  try {
+    let { token, username } = loadCredentials();
+
+    let response = await getData(
+      `http://localhost:3000/api/events/by/${username}`,
+      token
+    );
+
+    if (!response) return console.log("Response was null");
+
+    if (!response.length) Object.values(response).sort((a, b) => a.id - b.id);
+
+    return response;
+  } catch (error) {
+    console.log("Error: Loading events failed:", error);
+    throw error;
+  }
+}
+
+export async function viewEvent(title, code) {
+  try {
+    let { token } = loadCredentials();
+
+    let response = await getData(
+      `http://localhost:3000/api/events/title/${title}/code/${code}`,
+      token
+    );
+
+    if (!response) return console.log("Response was null");
+
+    return response;
+  } catch (error) {
+    console.log("Error: Could not fetch event:", error);
+    throw error;
+  }
+}
+
+export async function participateEvent(id, enclosure) {
+  try {
+    let { token } = loadCredentials();
+
+    let response = await postData(
+      `http://localhost:3000/api/petitions/new`,
+      token,
+      {
+        event: id,
+        enclosure: enclosure,
+      }
+    );
+
+    if (!response) return console.log("Response was null");
+
+    return response;
+  } catch (error) {
+    console.log("Error: Could not create petition for event event:", error);
+    throw error;
+  }
+}
+
+export async function getPetitionForEvent(eventId) {
+  try {
+    let { token, username } = loadCredentials();
+
+    let response = await getData(
+      `http://localhost:3000/api/petitions/event/${eventId}/sender/${username}`,
+      token
+    );
+
+    if (!response) return console.log("Response was null");
+
+    return response;
+  } catch (error) {
+    console.log("Error: Could not fetch petition for event:", error);
+    throw error;
+  }
+}
+
+export async function getAllPetitionForEvent(eventId) {
+  try {
+    let { token } = loadCredentials();
+
+    let response = await getData(
+      `http://localhost:3000/api/petitions/event/${eventId}`,
+      token
+    );
+
+    if (!response) return console.log("Response was null");
+
+    return response;
+  } catch (error) {
+    console.log("Error: Could not fetch petition for event:", error);
     throw error;
   }
 }

@@ -33,16 +33,16 @@ export const useBoolInput = (initialValue) => {
 };
 
 export const useNullableInput = (initialValue) => {
-  const [checked, setChecked] = useState(initialValue);
+  const [value, setValue] = useState(initialValue);
 
   return {
-    checked,
-    setChecked,
-    reset: () => setChecked(null),
+    value,
+    setValue,
+    reset: () => setValue(null),
     bind: {
-      checked,
+      value,
       onChange: (event) => {
-        setChecked(event.target.checked);
+        setValue(event.target.value);
       },
     },
   };

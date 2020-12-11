@@ -1,32 +1,79 @@
 import * as React from "react";
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 
-import styles from "./Dashboard.module.scss";
+import {
+  Button,
+  makeStyles,
+  MenuItem,
+  MenuList,
+  Typography,
+} from "@material-ui/core";
 
-import { MenuItem, MenuList, Typography } from "@material-ui/core";
+const useStyles = makeStyles((theme) => ({
+  root: {
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "center",
+  },
+  item: {
+    margin: "5px"
+  }
+}));
 
 function Dashboard(props) {
+  let classes = useStyles();
+  const history = useHistory();
+
   return (
     <div>
       <Typography variant="h6" color="textSecondary">
         {"Dashboard"}
       </Typography>
       {(props.credentials && (
-        <>
+        <div className={classes.root}>
           <MenuList>
-            <Link to="/messages">
+            <Button
+              className={classes.item}
+              variant="contained"
+              color="primary"
+              onClick={() => history.push("/messages")}>
               <MenuItem>View your Inbox</MenuItem>
-            </Link>
-            <Link to="/message/new">
+            </Button>
+            <Button
+              className={classes.item}
+              variant="contained"
+              color="primary"
+              onClick={() => history.push("/message/new")}>
               <MenuItem>Send a message</MenuItem>
-            </Link>
-            <Link to="/event/new">
-              <MenuItem>Create an Event</MenuItem>
-            </Link>
-            <MenuItem>Raise a New Petition</MenuItem>
-            <MenuItem>Respond to an Event</MenuItem>
+            </Button>
+            <br/>
+            <Button
+              className={classes.item}
+              variant="contained"
+              color="primary"
+              onClick={() => history.push("/events")}>
+              <MenuItem>View Current Events</MenuItem>
+            </Button>
+            {props.credentials.role === "admin" && (
+              <>
+                <Button
+                  className={classes.item}
+                  variant="contained"
+                  color="primary"
+                  onClick={() => history.push("/event/new")}>
+                  <MenuItem>Create an Event</MenuItem>
+                </Button>
+                <Button
+                  className={classes.item}
+                  variant="contained"
+                  color="primary"
+                  onClick={() => history.push("/petitions")}>
+                  <MenuItem>Event Petitions</MenuItem>
+                </Button>
+              </>
+            )}
           </MenuList>
-        </>
+        </div>
       )) || (
         <>
           <Typography variant="h5">Session not started.</Typography>

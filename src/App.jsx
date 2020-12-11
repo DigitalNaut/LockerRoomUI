@@ -1,5 +1,3 @@
-import logo from "./logo.svg";
-
 import {
   Route,
   BrowserRouter as Router,
@@ -28,7 +26,8 @@ import Composer from "./views/messages/Composer";
 import EventCreator from "./views/events/EventCreator";
 import Inbox from "./views/messages/Inbox";
 import { loadSession } from "./controllers/auth";
-import RouterBreadcrumbs from "./components/RouterBreadcrumbs";
+import EventsFeed from "./views/events/EventsFeed";
+import EventPetitions from "./views/events/EventPetitions";
 
 const drawerWidth = 0;
 
@@ -84,10 +83,6 @@ function App(props) {
             <Route exact path="/">
               <Homepage credentials={activeLogin} />
             </Route>
-            
-            <Route exact path="/test">
-              <RouterBreadcrumbs credentials={activeLogin} />
-            </Route>
 
             <Route exact path="/register">
               <Register credentials={activeLogin} />
@@ -131,6 +126,19 @@ function App(props) {
               path="/event/new"
               render={(routeProps) => (
                 <EventCreator credentials={activeLogin} {...routeProps} />
+              )}
+            />
+
+            <Route
+              path="/events"
+              render={(routeProps) => (
+                <EventsFeed credentials={activeLogin} {...routeProps} />
+              )}
+            />
+            <Route
+              path="/petitions"
+              render={(routeProps) => (
+                <EventPetitions credentials={activeLogin} {...routeProps} />
               )}
             />
             <Route path="/noservice" component={NotFound}></Route>

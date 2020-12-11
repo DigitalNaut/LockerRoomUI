@@ -1,12 +1,11 @@
 import * as React from "react";
 import { matchPath, useHistory } from "react-router";
 import { viewInbox } from "../../controllers/messages";
+import Message from "../../components/MessageDisplay";
 
 import {
   Typography,
   makeStyles,
-  Card,
-  CardContent,
   Tabs,
   Tab,
   Button,
@@ -17,29 +16,6 @@ const drawerWidth = 240;
 const useStyles = makeStyles((theme) => ({
   root: {
     display: "flex",
-  },
-  appBar: {
-    zIndex: theme.zIndex.drawer + 1,
-  },
-  drawer: {
-    width: drawerWidth,
-    flexShrink: 0,
-  },
-  drawerPaper: {
-    width: drawerWidth,
-    alignItems: "center",
-    padding: theme.spacing(3),
-  },
-  drawerContainer: {
-    display: "flex",
-    flexDirection: "column",
-    overflowY: "auto",
-  },
-  card: {
-    margin: theme.spacing(3),
-    minWidth: 275,
-    fontSize: 16,
-    color: "red",
   },
   actions: {
     display: "flex",
@@ -229,38 +205,6 @@ function Inbox(props) {
         </div>
       )}
     </>
-  );
-}
-
-function Message(props) {
-  const {
-    message: { sender, recipient, subject, body, footer },
-  } = props;
-  const classes = useStyles();
-
-  return (
-    <Card className={classes.card}>
-      <CardContent>
-        <Typography color="textSecondary" gutterBottom>
-          <b>From: </b>
-          {sender}
-          <br />
-          <b>To: </b>
-          {recipient}
-        </Typography>
-
-        <Typography variant="body1" color="textPrimary">
-          <b>Subject: </b>
-          {subject}
-          <br />
-          {body}
-        </Typography>
-
-        <Typography variant="body2" color="textSecondary">
-          {footer}
-        </Typography>
-      </CardContent>
-    </Card>
   );
 }
 

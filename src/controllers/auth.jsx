@@ -2,7 +2,8 @@ import { useHistory } from "react-router-dom";
 import * as Storage from "./storage";
 
 export async function postData(url = "", token, data = {}) {
-  
+  console.log("Data:", data);
+
   try {
     const request = await fetch(url, {
       method: "POST", // *GET, POST, PUT, DELETE, etc.
@@ -25,12 +26,7 @@ export async function postData(url = "", token, data = {}) {
     response.status = request.status;
 
     if (request.status !== 200) {
-      console.log(
-        "Response status:",
-        request.status,
-        "Message:",
-        request.message
-      );
+      console.log("Response status:", request.status, request.statusText);
     }
 
     return response;
@@ -58,12 +54,7 @@ export async function getData(url = "", token) {
 
     if (request.status === 401) return clearCredentials();
     if (request.status !== 200) {
-      console.log(
-        "Response status:",
-        request.status,
-        "Message:",
-        request.message
-      );
+      console.log("Response status:", request.status, request.statusText);
       return null;
     }
 
